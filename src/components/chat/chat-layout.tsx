@@ -43,19 +43,21 @@ export function ChatLayout({
   }
 
   return (
-    <ResizablePanelGroup direction="horizontal" className="h-full items-stretch bg-background p-4">
+    <ResizablePanelGroup direction="horizontal" className="h-full items-stretch bg-background">
       <ResizablePanel defaultSize={25} minSize={20} maxSize={30}>
-        <Card className="h-full">
-          <ConversationList
-            conversations={conversations}
-            selectedConversation={selectedConversation}
-            onSelectConversation={handleSelect}
-          />
-        </Card>
+        <div className="h-full p-4">
+            <Card className="h-full">
+            <ConversationList
+                conversations={conversations}
+                selectedConversation={selectedConversation}
+                onSelectConversation={handleSelect}
+            />
+            </Card>
+        </div>
       </ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize={75}>
-        <div className="flex h-full pl-4">
+        <div className="flex h-full p-4 pl-0">
           <div className="flex-1">
             {selectedConversation ? (
               <Card className="flex h-full flex-col">
