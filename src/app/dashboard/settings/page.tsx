@@ -103,112 +103,114 @@ export default function SettingsPage() {
     }
 
     return (
-        <div className="container mx-auto p-4 md:p-6 lg:p-8 h-full flex flex-col">
-            <div className="flex items-center justify-between mb-6">
-                 <h1 className="text-3xl font-bold font-headline">设置</h1>
-                 <Button onClick={handleSaveChanges} disabled={saving} className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                    {saving ? '保存中...' : '保存更改'}
-                </Button>
-            </div>
-           
-            <div className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
+        <div className="overflow-y-auto">
+            <div className="container mx-auto p-4 md:p-6 lg:p-8">
+                <div className="flex items-center justify-between mb-6">
+                     <h1 className="text-3xl font-bold font-headline">设置</h1>
+                     <Button onClick={handleSaveChanges} disabled={saving} className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                        {saving ? '保存中...' : '保存更改'}
+                    </Button>
+                </div>
+               
+                <div className="space-y-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>小部件自定义</CardTitle>
+                                <CardDescription>自定义您的聊天小部件的外观和感觉。</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="primary-color">主色</Label>
+                                    <div className="flex items-center gap-2">
+                                        <Input
+                                            id="primary-color-hex"
+                                            value={primaryColor}
+                                            onChange={(e) => setPrimaryColor(e.target.value)}
+                                            className="w-32"
+                                            disabled={saving}
+                                        />
+                                        <Input
+                                            id="primary-color"
+                                            type="color"
+                                            value={primaryColor}
+                                            onChange={(e) => setPrimaryColor(e.target.value)}
+                                            className="w-10 h-10 p-1"
+                                            disabled={saving}
+                                        />
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>小部件预览</CardTitle>
+                                <CardDescription>这是您的小部件向客户显示的方式。</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <WidgetPreview primaryColor={primaryColor} welcomeMessage={welcomeMessage} />
+                            </CardContent>
+                        </Card>
+                    </div>
                     <Card>
                         <CardHeader>
-                            <CardTitle>小部件自定义</CardTitle>
-                            <CardDescription>自定义您的聊天小部件的外观和感觉。</CardDescription>
+                            <CardTitle>自动聊天回复</CardTitle>
+                            <CardDescription>设置在特定情况下自动发送的消息。</CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-4">
+                        <CardContent className="space-y-6">
                             <div className="space-y-2">
-                                <Label htmlFor="primary-color">主色</Label>
-                                <div className="flex items-center gap-2">
-                                    <Input
-                                        id="primary-color-hex"
-                                        value={primaryColor}
-                                        onChange={(e) => setPrimaryColor(e.target.value)}
-                                        className="w-32"
-                                        disabled={saving}
-                                    />
-                                    <Input
-                                        id="primary-color"
-                                        type="color"
-                                        value={primaryColor}
-                                        onChange={(e) => setPrimaryColor(e.target.value)}
-                                        className="w-10 h-10 p-1"
-                                        disabled={saving}
-                                    />
-                                </div>
+                                <Label htmlFor="welcome-message">欢迎消息</Label>
+                                <Textarea
+                                    id="welcome-message"
+                                    placeholder="输入欢迎消息..."
+                                    value={welcomeMessage}
+                                    onChange={(e) => setWelcomeMessage(e.target.value)}
+                                    disabled={saving}
+                                />
+                                <p className="text-sm text-muted-foreground">此消息在客户首次打开聊天时发送。</p>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="offline-message">离线消息</Label>
+                                <Textarea
+                                    id="offline-message"
+                                    placeholder="输入离线消息..."
+                                    value={offlineMessage}
+                                    onChange={(e) => setOfflineMessage(e.target.value)}
+                                    disabled={saving}
+                                />
+                                <p className="text-sm text-muted-foreground">如果客户在您离线时尝试聊天，则会显示此消息。</p>
                             </div>
                         </CardContent>
                     </Card>
                     <Card>
                         <CardHeader>
-                            <CardTitle>小部件预览</CardTitle>
-                            <CardDescription>这是您的小部件向客户显示的方式。</CardDescription>
+                            <CardTitle>代理可用性</CardTitle>
+                            <CardDescription>设置您团队的在线时间和离线状态。</CardDescription>
                         </CardHeader>
-                        <CardContent>
-                            <WidgetPreview primaryColor={primaryColor} welcomeMessage={welcomeMessage} />
+                        <CardContent className="space-y-4">
+                            <div className="flex items-center justify-between rounded-lg border p-4">
+                                <div className="space-y-0.5">
+                                    <Label htmlFor="accept-chats" className="text-base">接受新聊天</Label>
+                                    <p className="text-sm text-muted-foreground">
+                                        关闭此项可对新访客显示为离线。
+                                    </p>
+                                </div>
+                                <Switch 
+                                    id="accept-chats"
+                                    checked={acceptNewChats}
+                                    onCheckedChange={setAcceptNewChats}
+                                    disabled={saving}
+                                />
+                            </div>
+                            <div className="space-y-2 pt-4">
+                                <Label>办公时间（即将推出）</Label>
+                                <p className="text-sm text-muted-foreground">
+                                    根据时间表自动设置您的可用性。此功能计划在将来的更新中推出。
+                                </p>
+                            </div>
                         </CardContent>
                     </Card>
                 </div>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>自动聊天回复</CardTitle>
-                        <CardDescription>设置在特定情况下自动发送的消息。</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        <div className="space-y-2">
-                            <Label htmlFor="welcome-message">欢迎消息</Label>
-                            <Textarea
-                                id="welcome-message"
-                                placeholder="输入欢迎消息..."
-                                value={welcomeMessage}
-                                onChange={(e) => setWelcomeMessage(e.target.value)}
-                                disabled={saving}
-                            />
-                            <p className="text-sm text-muted-foreground">此消息在客户首次打开聊天时发送。</p>
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="offline-message">离线消息</Label>
-                            <Textarea
-                                id="offline-message"
-                                placeholder="输入离线消息..."
-                                value={offlineMessage}
-                                onChange={(e) => setOfflineMessage(e.target.value)}
-                                disabled={saving}
-                            />
-                            <p className="text-sm text-muted-foreground">如果客户在您离线时尝试聊天，则会显示此消息。</p>
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>代理可用性</CardTitle>
-                        <CardDescription>设置您团队的在线时间和离线状态。</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="flex items-center justify-between rounded-lg border p-4">
-                            <div className="space-y-0.5">
-                                <Label htmlFor="accept-chats" className="text-base">接受新聊天</Label>
-                                <p className="text-sm text-muted-foreground">
-                                    关闭此项可对新访客显示为离线。
-                                </p>
-                            </div>
-                            <Switch 
-                                id="accept-chats"
-                                checked={acceptNewChats}
-                                onCheckedChange={setAcceptNewChats}
-                                disabled={saving}
-                            />
-                        </div>
-                        <div className="space-y-2 pt-4">
-                            <Label>办公时间（即将推出）</Label>
-                            <p className="text-sm text-muted-foreground">
-                                根据时间表自动设置您的可用性。此功能计划在将来的更新中推出。
-                            </p>
-                        </div>
-                    </CardContent>
-                </Card>
             </div>
         </div>
     )
