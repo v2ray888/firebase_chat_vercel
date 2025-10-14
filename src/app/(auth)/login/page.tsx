@@ -6,13 +6,18 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useState } from 'react';
 
 export default function LoginPage() {
   const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // 在这里添加与Neon数据库交互的逻辑
+    console.log('登录尝试:', { email, password });
     router.push('/dashboard');
   };
 
@@ -26,11 +31,11 @@ export default function LoginPage() {
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="email">电子邮件</Label>
-            <Input id="email" type="email" placeholder="m@example.com" required defaultValue="alex.doe@example.com" />
+            <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="password">密码</Label>
-            <Input id="password" type="password" required defaultValue="password" />
+            <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
