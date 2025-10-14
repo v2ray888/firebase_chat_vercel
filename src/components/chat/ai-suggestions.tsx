@@ -1,0 +1,83 @@
+'use client';
+
+import { aiSuggestedResponses } from '@/ai/flows/ai-suggested-responses';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Bot } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
+interface AiSuggestionsProps {
+  customerQuery: string;
+  chatHistory: string;
+  onSuggestionClick: (suggestion: string) => void;
+}
+
+export function AiSuggestions({ customerQuery, chatHistory, onSuggestionClick }: AiSuggestionsProps) {
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    async function getSuggestions() {
+      if (customerQuery) {
+        setLoading(true);
+        try {
+          // This is a mock call. In a real scenario, you'd provide more detailed past cases.
+          const pastCases = "Customer had a similar issue last month, resolved by clearing cache.";
+          const response = await aiSuggestedResponses({
+            customerQuery,
+            chatHistory,
+            pastCases,
+          });
+          setSuggestions(response.suggestedResponses);
+        } catch (error) {
+          console.error("Failed to get AI suggestions:", error);
+          // Handle error gracefully in a real app, maybe show a toast.
+          setSuggestions([]);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setSuggestions([]);
+      }
+    }
+
+    const timer = setTimeout(() => {
+        getSuggestions();
+    }, 500); // Debounce to avoid rapid calls
+
+    return () => clearTimeout(timer);
+  }, [customerQuery, chatHistory]);
+
+  return (
+    <Card className="border-l-0 rounded-l-none border-t-0 rounded-t-none">
+      <CardHeader className="flex-row items-center gap-2">
+        <Bot className="h-5 w-5 text-accent" />
+        <CardTitle className="font-headline">AI Suggestions</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {loading && (
+          <>
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+          </>
+        )}
+        {!loading && suggestions.length === 0 && customerQuery && (
+          <p className="text-sm text-muted-foreground">No suggestions available for this query.</p>
+        )}
+        {!loading &&
+          suggestions.map((suggestion, index) => (
+            <Button
+              key={index}
+              variant="outline"
+              className="w-full h-auto text-left justify-start py-2"
+              onClick={() => onSuggestionClick(suggestion)}
+            >
+              {suggestion}
+            </Button>
+          ))}
+      </CardContent>
+    </Card>
+  );
+}
