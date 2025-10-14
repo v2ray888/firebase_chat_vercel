@@ -1,9 +1,9 @@
--- 用户表（代理/管理员）
+-- 用户表
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
     avatar VARCHAR(255),
     role VARCHAR(50) CHECK (role IN ('agent', 'admin')) NOT NULL DEFAULT 'agent',
     status VARCHAR(50) CHECK (status IN ('online', 'offline')) NOT NULL DEFAULT 'offline',
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS customers (
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     avatar VARCHAR(255),
-    created_at TIMEST"Z NOT NULL DEFAULT NOW(),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -37,17 +37,11 @@ CREATE TABLE IF NOT EXISTS messages (
     case_id UUID NOT NULL REFERENCES cases(id) ON DELETE CASCADE,
     sender_type VARCHAR(50) CHECK (sender_type IN ('user', 'agent', 'system')) NOT NULL,
     content TEXT NOT NULL,
-    timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    "timestamp" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     user_id UUID REFERENCES users(id) ON DELETE SET NULL, -- 代理ID
-    customer_id UUID REFERENCES customers(id) ON DELETE CASCADE, -- 客户ID
-    -- 确保 user_id 或 customer_id 中至少有一个不为空，这取决于 sender_type
-    CONSTRAINT fk_sender
-        CHECK (
-            (sender_type = 'agent' AND user_id IS NOT NULL) OR
-            (sender_type = 'user' AND customer_id IS NOT NULL) OR
-            (sender_type = 'system')
-        )
+    customer_id UUID REFERENCES customers(id) ON DELETE CASCADE -- 客户ID
 );
+
 
 -- 为 updated_at 创建触发器函数
 CREATE OR REPLACE FUNCTION trigger_set_timestamp()
