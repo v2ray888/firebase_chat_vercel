@@ -55,7 +55,7 @@ export function AiSuggestions({ customerQuery, chatHistory, onSuggestionClick }:
   }, [customerQuery, chatHistory]);
 
   return (
-    <Card className="border-l-0 rounded-l-none border-t-0 rounded-t-none">
+    <div className="border-t">
       <CardHeader className="flex-row items-center gap-2">
         <Bot className="h-5 w-5 text-accent" />
         <CardTitle className="font-headline">AI 建议</CardTitle>
@@ -86,6 +86,6 @@ export function AiSuggestions({ customerQuery, chatHistory, onSuggestionClick }:
             </Button>
           ))}
       </CardContent>
-    </Card>
+    </div>
   );
 }

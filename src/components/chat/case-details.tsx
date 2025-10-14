@@ -19,7 +19,7 @@ const statusMap = {
 
 export function CaseDetails({ conversation, onUpdateStatus }: CaseDetailsProps) {
   return (
-    <Card className="h-full border-l-0 rounded-l-none">
+    <div className="h-full">
       <CardHeader>
         <CardTitle className="font-headline">案例详情</CardTitle>
       </CardHeader>
@@ -53,6 +53,6 @@ export function CaseDetails({ conversation, onUpdateStatus }: CaseDetailsProps) 
             <p className="text-sm text-muted-foreground">{conversation.case.summary}</p>
         </div>
       </CardContent>
-    </Card>
+    </div>
   );
 }

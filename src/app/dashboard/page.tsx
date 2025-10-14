@@ -8,6 +8,7 @@ import { CaseDetails } from '@/components/chat/case-details';
 import { AiSuggestions } from '@/components/chat/ai-suggestions';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Card } from '@/components/ui/card';
 
 export default function DashboardPage() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -103,58 +104,41 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-        <div className="flex h-full max-h-[calc(100vh-4rem)] items-stretch">
-             <div className="w-1/4 p-4 space-y-2 border-r">
-                <Skeleton className="h-20 w-full" />
-                <Skeleton className="h-20 w-full" />
-                <Skeleton className="h-20 w-full" />
-                <Skeleton className="h-20 w-full" />
-             </div>
-             <div className="w-1/2 flex flex-col">
-                <div className="flex-1 p-4 space-y-4">
-                    <Skeleton className="h-12 w-3/4" />
-                    <Skeleton className="h-12 w-3/4 ml-auto" />
-                    <Skeleton className="h-12 w-3/4" />
-                </div>
-                <div className="p-4 border-t">
-                    <Skeleton className="h-20 w-full" />
-                </div>
-             </div>
-             <div className="w-1/4 p-4 space-y-4 border-l">
-                <Skeleton className="h-32 w-full" />
-                <Skeleton className="h-48 w-full" />
-             </div>
+        <div className="p-4 grid gap-4 grid-cols-4 h-full max-h-[calc(100vh-4rem)] items-stretch">
+             <Skeleton className="col-span-1 h-full" />
+             <Skeleton className="col-span-2 h-full" />
+             <Skeleton className="col-span-1 h-full" />
         </div>
     )
   }
 
   return (
-    <ResizablePanelGroup direction="horizontal" className="h-full max-h-[calc(100vh-4rem)] items-stretch">
+    <ResizablePanelGroup direction="horizontal" className="h-full max-h-[calc(100vh-4rem)] items-stretch p-4 gap-4">
       <ResizablePanel defaultSize={25} minSize={20} maxSize={30}>
-        <div className="h-full overflow-y-auto">
+        <Card className="h-full">
           <ConversationList
             conversations={conversations}
             selectedConversation={selectedConversation}
             onSelectConversation={handleSelectConversation}
           />
-        </div>
+        </Card>
       </ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize={45} minSize={30}>
-        <div className="flex h-full flex-col">
           {selectedConversation && agent ? (
-            <ChatWindow conversation={selectedConversation} onSendMessage={handleSendMessage} agentAvatar={agent.avatar} />
+            <Card className="flex h-full flex-col">
+                <ChatWindow conversation={selectedConversation} onSendMessage={handleSendMessage} agentAvatar={agent.avatar} />
+            </Card>
           ) : (
-            <div className="flex h-full items-center justify-center">
+             <Card className="flex h-full items-center justify-center">
               <p className="text-muted-foreground">选择一个对话开始聊天</p>
-            </div>
+            </Card>
           )}
-        </div>
       </ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize={30} minSize={20} maxSize={40}>
         {selectedConversation ? (
-          <div className="flex h-full flex-col">
+          <Card className="flex h-full flex-col">
             <div className="flex-shrink-0">
                 <CaseDetails conversation={selectedConversation} onUpdateStatus={handleUpdateStatus} />
             </div>
@@ -165,11 +149,11 @@ export default function DashboardPage() {
                     onSuggestionClick={handleSuggestionClick}
                 />
             </div>
-          </div>
+          </Card>
         ) : (
-            <div className="flex h-full items-center justify-center border-l">
+            <Card className="flex h-full items-center justify-center">
               <p className="text-muted-foreground">案例详情将显示在此处</p>
-            </div>
+            </Card>
         )}
       </ResizablePanel>
     </ResizablePanelGroup>

@@ -27,7 +27,7 @@ export function ConversationList({
 }: ConversationListProps) {
   return (
     <ScrollArea className="h-full">
-      <div className="flex flex-col gap-2 p-4 pt-0">
+      <div className="flex flex-col gap-2 p-2">
         {conversations.map((item) => {
           const lastMessage = item.messages[item.messages.length - 1];
           const isSelected = selectedConversation?.id === item.id;
