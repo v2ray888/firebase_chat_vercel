@@ -8,9 +8,6 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarInset,
-  SidebarHeader,
-  SidebarContent,
 } from "@/components/ui/sidebar"
 import {
   MessageSquare,
@@ -37,14 +34,11 @@ export default function DashboardLayout({
         style={{ '--header-height': '4rem' } as React.CSSProperties}
       >
         <Sidebar className="bg-muted/40 border-r">
-          <SidebarHeader className="p-4">
-             <div className="flex items-center gap-2">
+             <div className="flex items-center gap-2 p-4">
                 <MessageSquare className="h-8 w-8 text-primary" />
                 <h1 className="text-2xl font-bold text-foreground font-headline">霓虹客服</h1>
             </div>
-          </SidebarHeader>
-          <SidebarContent>
-            <SidebarMenu>
+          <SidebarMenu>
               <SidebarMenuItem>
                 <Link href="/dashboard">
                   <SidebarMenuButton isActive={isActive('/dashboard')} tooltip="对话">
@@ -78,7 +72,6 @@ export default function DashboardLayout({
                 </Link>
               </SidebarMenuItem>
             </SidebarMenu>
-          </SidebarContent>
         </Sidebar>
 
         <div className="flex flex-1 flex-col">
