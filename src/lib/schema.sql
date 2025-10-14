@@ -1,72 +1,70 @@
--- 用户表
 CREATE TABLE IF NOT EXISTS users (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    avatar VARCHAR(255),
-    role VARCHAR(50) CHECK (role IN ('agent', 'admin')) NOT NULL DEFAULT 'agent',
-    status VARCHAR(50) CHECK (status IN ('online', 'offline')) NOT NULL DEFAULT 'offline',
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  "password" VARCHAR(255) NOT NULL,
+  avatar VARCHAR(255),
+  "role" VARCHAR(50) NOT NULL CHECK (role IN ('agent', 'admin')),
+  status VARCHAR(50) NOT NULL CHECK (status IN ('online', 'offline')),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 客户表
 CREATE TABLE IF NOT EXISTS customers (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    avatar VARCHAR(255),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  avatar VARCHAR(255),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 案例表
 CREATE TABLE IF NOT EXISTS cases (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    customer_id UUID NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
-    status VARCHAR(50) CHECK (status IN ('open', 'in-progress', 'resolved')) NOT NULL DEFAULT 'open',
-    summary TEXT,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  customer_id UUID REFERENCES customers(id) ON DELETE CASCADE,
+  status VARCHAR(50) NOT NULL CHECK (status IN ('open', 'in-progress', 'resolved')),
+  summary TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 消息表
 CREATE TABLE IF NOT EXISTS messages (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    case_id UUID NOT NULL REFERENCES cases(id) ON DELETE CASCADE,
-    sender_type VARCHAR(50) CHECK (sender_type IN ('user', 'agent', 'system')) NOT NULL,
-    content TEXT NOT NULL,
-    "timestamp" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    user_id UUID REFERENCES users(id) ON DELETE SET NULL, -- 代理ID
-    customer_id UUID REFERENCES customers(id) ON DELETE CASCADE -- 客户ID
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  case_id UUID REFERENCES cases(id) ON DELETE CASCADE,
+  sender_type VARCHAR(50) NOT NULL CHECK (sender_type IN ('user', 'agent', 'system')),
+  content TEXT NOT NULL,
+  "timestamp" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  user_id UUID REFERENCES users(id) ON DELETE SET NULL, -- agent's id
+  customer_id UUID REFERENCES customers(id) ON DELETE SET NULL
 );
 
+CREATE TABLE IF NOT EXISTS app_settings (
+  id INT PRIMARY KEY,
+  primary_color VARCHAR(20),
+  welcome_message TEXT,
+  offline_message TEXT,
+  accept_new_chats BOOLEAN DEFAULT true,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
 
--- 为 updated_at 创建触发器函数
-CREATE OR REPLACE FUNCTION trigger_set_timestamp()
+-- Function to update the updated_at column
+CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
-  NEW.updated_at = NOW();
-  RETURN NEW;
+   NEW.updated_at = NOW();
+   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ language 'plpgsql';
 
--- 将触发器附加到表
-DROP TRIGGER IF EXISTS set_timestamp_users ON users;
-CREATE TRIGGER set_timestamp_users
-BEFORE UPDATE ON users
-FOR EACH ROW
-EXECUTE PROCEDURE trigger_set_timestamp();
-
-DROP TRIGGER IF EXISTS set_timestamp_customers ON customers;
-CREATE TRIGGER set_timestamp_customers
-BEFORE UPDATE ON customers
-FOR EACH ROW
-EXECUTE PROCEDURE trigger_set_timestamp();
-
-DROP TRIGGER IF EXISTS set_timestamp_cases ON cases;
-CREATE TRIGGER set_timestamp_cases
-BEFORE UPDATE ON cases
-FOR EACH ROW
-EXECUTE PROCEDURE trigger_set_timestamp();
+-- Triggers to automatically update updated_at timestamps
+DO $$
+DECLARE
+    t_name TEXT;
+BEGIN
+    FOR t_name IN ('users', 'customers', 'cases', 'app_settings')
+    LOOP
+        EXECUTE format('DROP TRIGGER IF EXISTS update_%s_updated_at ON %I;', t_name, t_name);
+        EXECUTE format('CREATE TRIGGER update_%s_updated_at BEFORE UPDATE ON %I FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();', t_name, t_name);
+    END LOOP;
+END;
+$$;
