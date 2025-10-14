@@ -10,7 +10,6 @@ import {
   SidebarMenuButton,
   SidebarInset,
   SidebarHeader,
-  SidebarFooter,
   SidebarContent,
 } from "@/components/ui/sidebar"
 import {
@@ -33,7 +32,7 @@ export default function DashboardLayout({
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen">
+      <div className="flex min-h-screen bg-background">
         <Sidebar className="bg-muted/40 border-r">
           <SidebarHeader className="p-4">
              <div className="flex items-center gap-2">
@@ -79,7 +78,7 @@ export default function DashboardLayout({
           </SidebarContent>
         </Sidebar>
 
-        <SidebarInset className="flex flex-col bg-background">
+        <SidebarInset className="flex flex-1 flex-col bg-background">
             <DashboardHeader />
             <main className="flex-1 overflow-y-auto">
               {children}

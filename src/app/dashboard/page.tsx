@@ -10,7 +10,7 @@ export default function DashboardPage() {
   const [selectedConvId, setSelectedConvId] = useState<string | null>(null);
   const [agent, setAgent] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isRightPanelOpen, setIsRightPanelOpen] = useState(true);
+  const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -98,14 +98,14 @@ export default function DashboardPage() {
 
   if (loading || !agent) {
     return (
-        <div className="p-4 grid gap-4 h-full max-h-[calc(100vh-4rem)] items-stretch">
+        <div className="p-4 grid gap-4 h-full items-stretch">
              <Skeleton className="h-full w-full" />
         </div>
     )
   }
 
   return (
-    <div className="h-full max-h-[calc(100vh-4rem)]">
+    <div className="h-full">
       <ChatLayout
         conversations={conversations}
         selectedConversation={selectedConversation}
