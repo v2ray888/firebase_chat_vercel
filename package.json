@@ -9,7 +9,8 @@
     "build": "NODE_ENV=production next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "db:setup": "node -e \"require('dotenv').config(); const { Pool } = require('pg'); const fs = require('fs'); const sql = fs.readFileSync('src/lib/schema.sql').toString(); const pool = new Pool({ connectionString: process.env.POSTGRES_URL }); pool.query(sql).then(() => console.log('Database setup complete.')).catch(err => console.error('Database setup failed:', err)).finally(() => pool.end());\""
   },
   "dependencies": {
     "@genkit-ai/google-genai": "^1.20.0",
