@@ -32,7 +32,10 @@ export default function DashboardLayout({
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen bg-background">
+      <div 
+        className="flex min-h-screen bg-background"
+        style={{ '--header-height': '4rem' } as React.CSSProperties}
+      >
         <Sidebar className="bg-muted/40 border-r">
           <SidebarHeader className="p-4">
              <div className="flex items-center gap-2">
@@ -80,7 +83,7 @@ export default function DashboardLayout({
 
         <SidebarInset className="flex flex-1 flex-col bg-background">
             <DashboardHeader />
-            <main className="flex-1 overflow-y-auto">
+            <main className="h-[calc(100vh-var(--header-height))]">
               {children}
             </main>
         </SidebarInset>
