@@ -54,7 +54,7 @@ export default function SignupPage() {
   };
 
   return (
-    <Card className="w-full max-w-sm bg-card/50 backdrop-blur-sm">
+    <Card className="w-full max-w-sm">
       <CardHeader>
         <CardTitle className="text-2xl font-headline">注册</CardTitle>
         <CardDescription>创建一个帐户以开始使用霓虹客服。</CardDescription>
@@ -75,7 +75,7 @@ export default function SignupPage() {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
-          <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" type="submit" disabled={loading}>
+          <Button className="w-full" type="submit" disabled={loading}>
             {loading ? '创建中...' : '创建帐户'}
           </Button>
           <div className="text-center text-sm">

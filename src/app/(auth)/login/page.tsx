@@ -55,7 +55,7 @@ export default function LoginPage() {
   };
 
   return (
-    <Card className="w-full max-w-sm bg-card/50 backdrop-blur-sm">
+    <Card className="w-full max-w-sm">
       <CardHeader>
         <CardTitle className="text-2xl font-headline">登录</CardTitle>
         <CardDescription>输入您的电子邮件以登录您的帐户。</CardDescription>
@@ -72,7 +72,7 @@ export default function LoginPage() {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
-          <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" type="submit" disabled={loading}>
+          <Button className="w-full" type="submit" disabled={loading}>
             {loading ? '登录中...' : '登录'}
           </Button>
           <div className="text-center text-sm">

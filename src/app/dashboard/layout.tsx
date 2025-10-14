@@ -18,11 +18,9 @@ import {
   Settings,
   Code,
   Users,
-  Bot
 } from "lucide-react"
 import { DashboardHeader } from "@/components/dashboard-header";
-import { UserNav } from "@/components/user-nav";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 
 export default function DashboardLayout({
   children,
@@ -36,7 +34,7 @@ export default function DashboardLayout({
   return (
     <SidebarProvider>
       <div className="flex min-h-screen">
-        <Sidebar className="bg-muted/30 border-r border-border/30">
+        <Sidebar className="bg-muted/40 border-r">
           <SidebarHeader className="p-4">
              <div className="flex items-center gap-2">
                 <MessageSquare className="h-8 w-8 text-primary" />
@@ -81,7 +79,7 @@ export default function DashboardLayout({
           </SidebarContent>
         </Sidebar>
 
-        <SidebarInset className="flex flex-col">
+        <SidebarInset className="flex flex-col bg-background">
             <DashboardHeader />
             <main className="flex-1 overflow-y-auto">
               {children}
