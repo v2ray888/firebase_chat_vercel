@@ -10,7 +10,7 @@ export function DashboardHeader() {
       </div>
       <div className="hidden items-center gap-2 md:flex">
         <MessageSquare className="h-6 w-6 text-primary" />
-        <h1 className="text-xl font-bold text-foreground font-headline">NeonSupport</h1>
+        <h1 className="text-xl font-bold text-foreground font-headline">霓虹客服</h1>
       </div>
       <div className="flex w-full items-center justify-end gap-4">
         <UserNav />

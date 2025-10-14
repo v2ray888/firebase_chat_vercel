@@ -14,36 +14,36 @@ import { useState } from "react";
 export default function SettingsPage() {
     const { toast } = useToast();
     const [primaryColor, setPrimaryColor] = useState('#64B5F6');
-    const [welcomeMessage, setWelcomeMessage] = useState('Hello! How can we help you today?');
-    const [offlineMessage, setOfflineMessage] = useState('We are currently away. Please leave a message and we will get back to you.');
+    const [welcomeMessage, setWelcomeMessage] = useState('您好！我们能为您做些什么？');
+    const [offlineMessage, setOfflineMessage] = useState('我们目前不在。请留言，我们会尽快回复您。');
 
     const handleSaveChanges = () => {
         toast({
-            title: "Settings saved",
-            description: "Your changes have been successfully saved.",
+            title: "设置已保存",
+            description: "您的更改已成功保存。",
         });
     }
 
     return (
         <div className="container mx-auto p-4 md:p-6 lg:p-8">
-            <h1 className="text-3xl font-bold font-headline mb-6">Settings</h1>
+            <h1 className="text-3xl font-bold font-headline mb-6">设置</h1>
             <Tabs defaultValue="appearance">
                 <TabsList className="grid w-full grid-cols-3 mb-6">
-                    <TabsTrigger value="appearance">Appearance</TabsTrigger>
-                    <TabsTrigger value="availability">Availability</TabsTrigger>
-                    <TabsTrigger value="responses">Automated Responses</TabsTrigger>
+                    <TabsTrigger value="appearance">外观</TabsTrigger>
+                    <TabsTrigger value="availability">可用性</TabsTrigger>
+                    <TabsTrigger value="responses">自动回复</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="appearance">
                     <div className="grid md:grid-cols-2 gap-6">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Widget Customization</CardTitle>
-                                <CardDescription>Customize the look and feel of your chat widget.</CardDescription>
+                                <CardTitle>小部件自定义</CardTitle>
+                                <CardDescription>自定义您的聊天小部件的外观和感觉。</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="primary-color">Primary Color</Label>
+                                    <Label htmlFor="primary-color">主色</Label>
                                     <div className="flex items-center gap-2">
                                         <Input
                                             id="primary-color-hex"
@@ -64,8 +64,8 @@ export default function SettingsPage() {
                         </Card>
                         <Card>
                              <CardHeader>
-                                <CardTitle>Widget Preview</CardTitle>
-                                <CardDescription>This is how your widget will appear to customers.</CardDescription>
+                                <CardTitle>小部件预览</CardTitle>
+                                <CardDescription>这是您的小部件向客户显示的方式。</CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <WidgetPreview primaryColor={primaryColor} welcomeMessage={welcomeMessage} />
@@ -77,23 +77,23 @@ export default function SettingsPage() {
                 <TabsContent value="availability">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Agent Availability</CardTitle>
-                            <CardDescription>Set your team's online hours and offline status.</CardDescription>
+                            <CardTitle>代理可用性</CardTitle>
+                            <CardDescription>设置您团队的在线时间和离线状态。</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="flex items-center justify-between rounded-lg border p-4">
                                 <div className="space-y-0.5">
-                                    <Label className="text-base">Accepting new chats</Label>
+                                    <Label className="text-base">接受新聊天</Label>
                                     <p className="text-sm text-muted-foreground">
-                                        Turn this off to appear offline to new visitors.
+                                        关闭此项可对新访客显示为离线。
                                     </p>
                                 </div>
                                 <Switch defaultChecked/>
                             </div>
                             <div className="space-y-2">
-                                <Label>Office Hours (Coming Soon)</Label>
+                                <Label>办公时间（即将推出）</Label>
                                 <p className="text-sm text-muted-foreground">
-                                    Automatically set your availability based on a schedule. This feature is planned for a future update.
+                                    根据时间表自动设置您的可用性。此功能计划在将来的更新中推出。
                                 </p>
                             </div>
                         </CardContent>
@@ -103,36 +103,36 @@ export default function SettingsPage() {
                 <TabsContent value="responses">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Automated Chat Responses</CardTitle>
-                            <CardDescription>Set up messages that send automatically in certain situations.</CardDescription>
+                            <CardTitle>自动聊天回复</CardTitle>
+                            <CardDescription>设置在特定情况下自动发送的消息。</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div className="space-y-2">
-                                <Label htmlFor="welcome-message">Welcome Message</Label>
+                                <Label htmlFor="welcome-message">欢迎消息</Label>
                                 <Textarea
                                     id="welcome-message"
-                                    placeholder="Enter a welcome message..."
+                                    placeholder="输入欢迎消息..."
                                     value={welcomeMessage}
                                     onChange={(e) => setWelcomeMessage(e.target.value)}
                                 />
-                                <p className="text-sm text-muted-foreground">This message is sent when a customer first opens the chat.</p>
+                                <p className="text-sm text-muted-foreground">此消息在客户首次打开聊天时发送。</p>
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="offline-message">Offline Message</Label>
+                                <Label htmlFor="offline-message">离线消息</Label>
                                 <Textarea
                                     id="offline-message"
-                                    placeholder="Enter an offline message..."
+                                    placeholder="输入离线消息..."
                                     value={offlineMessage}
                                     onChange={(e) => setOfflineMessage(e.target.value)}
                                 />
-                                <p className="text-sm text-muted-foreground">This message is shown if a customer tries to chat when you're offline.</p>
+                                <p className="text-sm text-muted-foreground">如果客户在您离线时尝试聊天，则会显示此消息。</p>
                             </div>
                         </CardContent>
                     </Card>
                 </TabsContent>
             </Tabs>
             <div className="mt-6 flex justify-end">
-                <Button onClick={handleSaveChanges} className="bg-accent hover:bg-accent/90 text-accent-foreground">Save Changes</Button>
+                <Button onClick={handleSaveChanges} className="bg-accent hover:bg-accent/90 text-accent-foreground">保存更改</Button>
             </div>
         </div>
     )

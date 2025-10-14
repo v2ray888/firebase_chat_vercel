@@ -30,12 +30,12 @@ const initialPromptPrompt = ai.definePrompt({
   name: 'initialPromptPrompt',
   input: {schema: InitialPromptInputSchema},
   output: {schema: InitialPromptOutputSchema},
-  prompt: `You are an AI assistant designed to generate an initial prompt based on the user's query and chat history.
+  prompt: `你是一个AI助手，旨在根据用户的查询和聊天记录生成一个初始提示。
 
-User Query: {{{query}}}
-Chat History: {{{chatHistory}}}
+用户查询: {{{query}}}
+聊天记录: {{{chatHistory}}}
 
-Generate an initial prompt to start the chat session. Consider the previous chat history and user query to create an appropriate starting point.`,
+生成一个初始提示来开始聊天会话。考虑以前的聊天记录和用户查询，以创建一个合适的起点。`,
 });
 
 const initialPromptFlow = ai.defineFlow(

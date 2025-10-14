@@ -5,11 +5,19 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import type { Conversation } from '@/types';
 import { formatDistanceToNow } from 'date-fns';
+import { zhCN } from 'date-fns/locale';
+
 
 interface ConversationListProps {
   conversations: Conversation[];
   selectedConversation: Conversation | null;
   onSelectConversation: (conversation: Conversation) => void;
+}
+
+const statusMap = {
+    open: '开启',
+    'in-progress': '进行中',
+    resolved: '已解决'
 }
 
 export function ConversationList({
@@ -42,13 +50,13 @@ export function ConversationList({
                 </div>
                 {lastMessage && (
                   <div className="ml-auto text-xs text-muted-foreground">
-                    {formatDistanceToNow(new Date(lastMessage.timestamp), { addSuffix: true })}
+                    {formatDistanceToNow(new Date(lastMessage.timestamp), { addSuffix: true, locale: zhCN })}
                   </div>
                 )}
               </div>
               {lastMessage && (
                 <div className="line-clamp-2 text-xs text-muted-foreground">
-                  {lastMessage.sender === 'agent' && 'You: '}
+                  {lastMessage.sender === 'agent' && '你: '}
                   {lastMessage.content}
                 </div>
               )}
@@ -56,7 +64,7 @@ export function ConversationList({
                  {item.case.status === 'open' && <span className="flex h-2 w-2 rounded-full bg-blue-500" />}
                  {item.case.status === 'in-progress' && <span className="flex h-2 w-2 rounded-full bg-yellow-500" />}
                  {item.case.status === 'resolved' && <span className="flex h-2 w-2 rounded-full bg-green-500" />}
-                <span className="text-xs capitalize text-muted-foreground">{item.case.status.replace('-', ' ')}</span>
+                <span className="text-xs capitalize text-muted-foreground">{statusMap[item.case.status]}</span>
               </div>
             </button>
           );

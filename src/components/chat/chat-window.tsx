@@ -93,7 +93,7 @@ export function ChatWindow({ conversation, onSendMessage, agentAvatar }: ChatWin
       <div className="border-t p-4 bg-background">
         <form onSubmit={handleSendMessage} className="relative">
           <Textarea
-            placeholder="Type your message here..."
+            placeholder="在此处输入您的消息..."
             className="pr-20 resize-none"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
@@ -106,7 +106,7 @@ export function ChatWindow({ conversation, onSendMessage, agentAvatar }: ChatWin
           />
           <Button type="submit" size="icon" className="absolute top-1/2 -translate-y-1/2 right-3" disabled={!newMessage.trim()}>
             <Send className="h-4 w-4" />
-            <span className="sr-only">Send</span>
+            <span className="sr-only">发送</span>
           </Button>
         </form>
       </div>

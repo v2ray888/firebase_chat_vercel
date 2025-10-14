@@ -74,7 +74,7 @@ export default function DashboardPage() {
             <ChatWindow conversation={selectedConversation} onSendMessage={handleSendMessage} agentAvatar={agent.avatar} />
           ) : (
             <div className="flex h-full items-center justify-center">
-              <p className="text-muted-foreground">Select a conversation to start chatting</p>
+              <p className="text-muted-foreground">选择一个对话开始聊天</p>
             </div>
           )}
         </div>
@@ -96,7 +96,7 @@ export default function DashboardPage() {
           </div>
         ) : (
             <div className="flex h-full items-center justify-center border-l">
-              <p className="text-muted-foreground">Case details will appear here</p>
+              <p className="text-muted-foreground">案例详情将显示在此处</p>
             </div>
         )}
       </ResizablePanel>

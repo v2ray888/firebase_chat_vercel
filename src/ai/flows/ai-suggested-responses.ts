@@ -33,7 +33,7 @@ const prompt = ai.definePrompt({
   name: 'aiSuggestedResponsesPrompt',
   input: {schema: AISuggestedResponsesInputSchema},
   output: {schema: AISuggestedResponsesOutputSchema},
-  prompt: `You are an AI assistant helping customer support agents respond to customer inquiries efficiently.\n\n  Based on the customer's query, chat history, and relevant information from past cases, provide a list of suggested responses that the agent can use.\n\n  Customer Query: {{{customerQuery}}}\n  Chat History: {{{chatHistory}}}\n  Past Cases: {{{pastCases}}}\n\n  Suggested Responses:`, // Add handlebars
+  prompt: `你是一个AI助手，帮助客服人员高效地回应客户的咨询。\n\n根据客户的查询、聊天记录和过去案例的相关信息，为客服人员提供一系列建议的回复。\n\n客户查询: {{{customerQuery}}}\n聊天记录: {{{chatHistory}}}\n过去案例: {{{pastCases}}}\n\n建议的回复:`, // Add handlebars
 });
 
 const aiSuggestedResponsesFlow = ai.defineFlow(

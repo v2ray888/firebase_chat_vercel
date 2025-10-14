@@ -11,11 +11,17 @@ interface CaseDetailsProps {
   onUpdateStatus: (status: 'open' | 'in-progress' | 'resolved') => void;
 }
 
+const statusMap = {
+    open: '开启',
+    'in-progress': '进行中',
+    resolved: '已解决'
+}
+
 export function CaseDetails({ conversation, onUpdateStatus }: CaseDetailsProps) {
   return (
     <Card className="h-full border-l-0 rounded-l-none">
       <CardHeader>
-        <CardTitle className="font-headline">Case Details</CardTitle>
+        <CardTitle className="font-headline">案例详情</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center gap-3">
@@ -30,20 +36,20 @@ export function CaseDetails({ conversation, onUpdateStatus }: CaseDetailsProps) 
         </div>
         <Separator />
         <div>
-          <h4 className="text-sm font-medium mb-2">Case Status</h4>
+          <h4 className="text-sm font-medium mb-2">案例状态</h4>
           <Select value={conversation.case.status} onValueChange={onUpdateStatus}>
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Set status" />
+              <SelectValue placeholder="设置状态" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="open">Open</SelectItem>
-              <SelectItem value="in-progress">In Progress</SelectItem>
-              <SelectItem value="resolved">Resolved</SelectItem>
+              <SelectItem value="open">开启</SelectItem>
+              <SelectItem value="in-progress">进行中</SelectItem>
+              <SelectItem value="resolved">已解决</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <div>
-            <h4 className="text-sm font-medium mb-2">Case Summary</h4>
+            <h4 className="text-sm font-medium mb-2">案例摘要</h4>
             <p className="text-sm text-muted-foreground">{conversation.case.summary}</p>
         </div>
       </CardContent>

@@ -34,18 +34,18 @@ export function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
-            Profile
+            个人资料
           </DropdownMenuItem>
           <Link href="/dashboard/settings">
             <DropdownMenuItem>
-              Settings
+              设置
             </DropdownMenuItem>
           </Link>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <Link href="/login">
             <DropdownMenuItem>
-                Log out
+                登出
             </DropdownMenuItem>
         </Link>
       </DropdownMenuContent>

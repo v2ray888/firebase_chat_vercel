@@ -40,40 +40,40 @@ export default function DashboardLayout({
           <SidebarHeader className="p-4">
              <div className="flex items-center gap-2">
                 <MessageSquare className="h-8 w-8 text-primary" />
-                <h1 className="text-2xl font-bold text-foreground font-headline">NeonSupport</h1>
+                <h1 className="text-2xl font-bold text-foreground font-headline">霓虹客服</h1>
             </div>
           </SidebarHeader>
           <SidebarContent>
             <SidebarMenu>
               <SidebarMenuItem>
                 <Link href="/dashboard" legacyBehavior passHref>
-                  <SidebarMenuButton isActive={isActive('/dashboard')} tooltip="Conversations">
+                  <SidebarMenuButton isActive={isActive('/dashboard')} tooltip="对话">
                     <MessageSquare />
-                    <span>Conversations</span>
+                    <span>对话</span>
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <Link href="/dashboard/integration" legacyBehavior passHref>
-                  <SidebarMenuButton isActive={isActive('/dashboard/integration')} tooltip="Integration">
+                  <SidebarMenuButton isActive={isActive('/dashboard/integration')} tooltip="整合">
                     <Code />
-                    <span>Integration</span>
+                    <span>整合</span>
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <Link href="/dashboard/settings" legacyBehavior passHref>
-                  <SidebarMenuButton isActive={isActive('/dashboard/settings')} tooltip="Settings">
+                  <SidebarMenuButton isActive={isActive('/dashboard/settings')} tooltip="设置">
                     <Settings />
-                    <span>Settings</span>
+                    <span>设置</span>
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <Link href="/dashboard/admin" legacyBehavior passHref>
-                  <SidebarMenuButton isActive={isActive('/dashboard/admin')} tooltip="Admin">
+                  <SidebarMenuButton isActive={isActive('/dashboard/admin')} tooltip="管理">
                     <Users />
-                    <span>Admin</span>
+                    <span>管理</span>
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>

@@ -23,7 +23,7 @@ export function AiSuggestions({ customerQuery, chatHistory, onSuggestionClick }:
         setLoading(true);
         try {
           // This is a mock call. In a real scenario, you'd provide more detailed past cases.
-          const pastCases = "Customer had a similar issue last month, resolved by clearing cache.";
+          const pastCases = "客户上个月遇到了类似的问题，通过清除缓存解决了。";
           const response = await aiSuggestedResponses({
             customerQuery,
             chatHistory,
@@ -31,7 +31,7 @@ export function AiSuggestions({ customerQuery, chatHistory, onSuggestionClick }:
           });
           setSuggestions(response.suggestedResponses);
         } catch (error) {
-          console.error("Failed to get AI suggestions:", error);
+          console.error("未能获取AI建议:", error);
           // Handle error gracefully in a real app, maybe show a toast.
           setSuggestions([]);
         } finally {
@@ -53,7 +53,7 @@ export function AiSuggestions({ customerQuery, chatHistory, onSuggestionClick }:
     <Card className="border-l-0 rounded-l-none border-t-0 rounded-t-none">
       <CardHeader className="flex-row items-center gap-2">
         <Bot className="h-5 w-5 text-accent" />
-        <CardTitle className="font-headline">AI Suggestions</CardTitle>
+        <CardTitle className="font-headline">AI 建议</CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
         {loading && (
@@ -64,7 +64,7 @@ export function AiSuggestions({ customerQuery, chatHistory, onSuggestionClick }:
           </>
         )}
         {!loading && suggestions.length === 0 && customerQuery && (
-          <p className="text-sm text-muted-foreground">No suggestions available for this query.</p>
+          <p className="text-sm text-muted-foreground">此查询没有可用的建议。</p>
         )}
         {!loading &&
           suggestions.map((suggestion, index) => (

@@ -17,8 +17,8 @@ export default function IntegrationPage() {
     const handleCopy = () => {
         navigator.clipboard.writeText(codeSnippet);
         toast({
-            title: "Copied to clipboard!",
-            description: "You can now paste the code into your website's HTML.",
+            title: "已复制到剪贴板！",
+            description: "您现在可以将代码粘贴到您网站的HTML中。",
         });
     };
 
@@ -26,10 +26,9 @@ export default function IntegrationPage() {
         <div className="container mx-auto p-4 md:p-6 lg:p-8">
             <Card>
                 <CardHeader>
-                    <CardTitle className="font-headline text-2xl">Website Integration</CardTitle>
+                    <CardTitle className="font-headline text-2xl">网站整合</CardTitle>
                     <CardDescription>
-                        Embed the NeonSupport chat widget on your website by pasting this code snippet just before the closing 
-                        <code>&lt;/body&gt;</code> tag of your HTML file.
+                        通过将此代码片段粘贴到HTML文件的<code>&lt;/body&gt;</code>结束标签之前，将霓虹客服聊天小部件嵌入到您的网站中。
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -42,11 +41,11 @@ export default function IntegrationPage() {
                             onClick={handleCopy}
                         >
                             <Copy className="h-4 w-4" />
-                            <span className="sr-only">Copy code</span>
+                            <span className="sr-only">复制代码</span>
                         </Button>
                     </div>
                     <p className="mt-4 text-sm text-muted-foreground">
-                        Remember to replace <code>YOUR_UNIQUE_WIDGET_ID</code> with your actual widget ID from the settings page.
+                        请记住将<code>YOUR_UNIQUE_WIDGET_ID</code>替换为您在设置页面中的实际小部件ID。
                     </p>
                 </CardContent>
             </Card>

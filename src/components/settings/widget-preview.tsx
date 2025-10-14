@@ -30,8 +30,8 @@ export function WidgetPreview({ primaryColor, welcomeMessage }: WidgetPreviewPro
                     <div className="p-4 rounded-t-xl text-primary-foreground" style={{ backgroundColor: primaryColor }}>
                         <div className="flex justify-between items-center">
                             <div>
-                                <h3 className="font-bold">NeonSupport</h3>
-                                <p className="text-xs">We typically reply in a few minutes.</p>
+                                <h3 className="font-bold">霓虹客服</h3>
+                                <p className="text-xs">我们通常在几分钟内回复。</p>
                             </div>
                             <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => setIsOpen(false)}>
                                 <X className="h-5 w-5"/>
@@ -41,13 +41,13 @@ export function WidgetPreview({ primaryColor, welcomeMessage }: WidgetPreviewPro
                     <CardContent className="flex-1 p-4 space-y-3">
                         <div className="flex items-start gap-2">
                              <div className="p-2 rounded-lg bg-muted text-sm">
-                                {welcomeMessage || "Hello! How can we help you today?"}
+                                {welcomeMessage || "您好！我们能为您做些什么？"}
                             </div>
                         </div>
                     </CardContent>
                     <div className="p-2 border-t">
                         <div className="relative">
-                            <input className="w-full border rounded-md p-2 pr-10 text-sm" placeholder="Type a message..."/>
+                            <input className="w-full border rounded-md p-2 pr-10 text-sm" placeholder="输入消息..."/>
                             <Send className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"/>
                         </div>
                     </div>
