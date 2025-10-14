@@ -46,7 +46,7 @@ export default function DashboardLayout({
           <SidebarContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <Link href="/dashboard" legacyBehavior passHref>
+                <Link href="/dashboard">
                   <SidebarMenuButton isActive={isActive('/dashboard')} tooltip="对话">
                     <MessageSquare />
                     <span>对话</span>
@@ -54,7 +54,7 @@ export default function DashboardLayout({
                 </Link>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <Link href="/dashboard/integration" legacyBehavior passHref>
+                <Link href="/dashboard/integration">
                   <SidebarMenuButton isActive={isActive('/dashboard/integration')} tooltip="整合">
                     <Code />
                     <span>整合</span>
@@ -62,7 +62,7 @@ export default function DashboardLayout({
                 </Link>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <Link href="/dashboard/settings" legacyBehavior passHref>
+                <Link href="/dashboard/settings">
                   <SidebarMenuButton isActive={isActive('/dashboard/settings')} tooltip="设置">
                     <Settings />
                     <span>设置</span>
@@ -70,7 +70,7 @@ export default function DashboardLayout({
                 </Link>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <Link href="/dashboard/admin" legacyBehavior passHref>
+                <Link href="/dashboard/admin">
                   <SidebarMenuButton isActive={isActive('/dashboard/admin')} tooltip="管理">
                     <Users />
                     <span>管理</span>
