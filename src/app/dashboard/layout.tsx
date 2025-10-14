@@ -36,7 +36,7 @@ export default function DashboardLayout({
   return (
     <SidebarProvider>
       <div className="flex min-h-screen">
-        <Sidebar>
+        <Sidebar className="bg-muted/30 border-r border-border/30">
           <SidebarHeader className="p-4">
              <div className="flex items-center gap-2">
                 <MessageSquare className="h-8 w-8 text-primary" />

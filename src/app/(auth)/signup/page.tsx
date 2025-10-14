@@ -54,7 +54,7 @@ export default function SignupPage() {
   };
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full max-w-sm bg-card/50 backdrop-blur-sm">
       <CardHeader>
         <CardTitle className="text-2xl font-headline">注册</CardTitle>
         <CardDescription>创建一个帐户以开始使用霓虹客服。</CardDescription>

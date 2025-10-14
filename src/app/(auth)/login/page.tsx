@@ -55,7 +55,7 @@ export default function LoginPage() {
   };
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full max-w-sm bg-card/50 backdrop-blur-sm">
       <CardHeader>
         <CardTitle className="text-2xl font-headline">登录</CardTitle>
         <CardDescription>输入您的电子邮件以登录您的帐户。</CardDescription>
