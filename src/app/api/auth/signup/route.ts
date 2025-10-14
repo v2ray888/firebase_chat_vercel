@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // 将用户插入数据库
-    const defaultAvatar = `https://picsum.photos/seed/${Math.random()}/40/40`;
+    const defaultAvatar = `https://picsum.photos/seed/${encodeURIComponent(email)}/40/40`;
     const newUser = await db.query(
       'INSERT INTO users (name, email, "password", avatar, "role", status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, name, email, "role"',
       [name, email, hashedPassword, defaultAvatar, 'agent', 'offline']
@@ -32,3 +32,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: '内部服务器错误' }, { status: 500 });
   }
 }
+
+    

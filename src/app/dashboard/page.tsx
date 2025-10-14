@@ -4,46 +4,55 @@ import { useState, useEffect } from 'react';
 import type { Conversation, Message, User } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ChatLayout } from '@/components/chat/chat-layout';
+import { useToast } from '@/hooks/use-toast';
+
 
 export default function DashboardPage() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConvId, setSelectedConvId] = useState<string | null>(null);
   const [agent, setAgent] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
+  const [isRightPanelOpen, setIsRightPanelOpen] = useState(true);
+  const { toast } = useToast();
+
+  const fetchConversations = async () => {
+    try {
+      const convResponse = await fetch('/api/conversations');
+      if (!convResponse.ok) {
+        throw new Error('Failed to fetch conversations');
+      }
+      const convData: Conversation[] = await convResponse.json();
+      setConversations(convData);
+      
+      if (!selectedConvId && convData.length > 0) {
+        setSelectedConvId(convData[0].id);
+      } else if (convData.length === 0) {
+        setSelectedConvId(null);
+      }
+
+    } catch (error) {
+      console.error("Error fetching conversations:", error);
+      toast({ variant: 'destructive', title: '错误', description: '无法加载对话。' });
+    }
+  }
 
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
+      await fetchConversations();
+
       try {
-        const [convResponse, agentResponse] = await Promise.all([
-          fetch('/api/conversations'),
-          // In a real app, you'd fetch the currently logged-in agent
-          fetch('/api/users').then(res => res.json().then(users => users.find((u: User) => u.email === 'alex.doe@example.com')))
-        ]);
-        
-        if (!convResponse.ok) {
-          throw new Error('Failed to fetch conversations');
-        }
-
-        const convData: Conversation[] = await convResponse.json();
-        
-        setConversations(convData);
-        if (convData.length > 0) {
-          setSelectedConvId(convData[0].id);
-        }
-
+        const agentResponse = await fetch('/api/users').then(res => res.json().then(users => users.find((u: User) => u.email === 'alex.doe@example.com')))
         if (agentResponse) {
           setAgent(agentResponse);
         } else {
-          // Fallback or handle case where agent is not found
            const mockAgent: User = { id: '72890a1a-4530-4355-8854-82531580e0a5', name: 'Alex Doe', email: 'alex.doe@example.com', avatar: 'https://picsum.photos/seed/1/40/40', role: 'agent', status: 'online' };
            setAgent(mockAgent);
         }
 
       } catch (error) {
-        console.error("Error fetching data:", error);
-        // Optionally, set some error state to show in the UI
+        console.error("Error fetching agent:", error);
+        toast({ variant: 'destructive', title: '错误', description: '无法加载代理信息。' });
       } finally {
         setLoading(false);
       }
@@ -57,34 +66,100 @@ export default function DashboardPage() {
     setSelectedConvId(conversationId);
   };
 
-  const handleSendMessage = (message: Omit<Message, 'id' | 'timestamp' | 'case_id'>) => {
+  const handleSendMessage = async (message: Omit<Message, 'id' | 'timestamp' | 'case_id'>) => {
     if (!selectedConvId || !agent) return;
 
+    const tempId = `msg-${Date.now()}`;
     const newMessage: Message = {
       ...message,
-      id: `msg-${Date.now()}`,
+      id: tempId,
       timestamp: new Date().toISOString(),
       case_id: selectedConvId,
       user_id: agent.id,
     };
-
+    
+    // Optimistic update
     setConversations(prev =>
       prev.map(c =>
         c.id === selectedConvId ? { ...c, messages: [...c.messages, newMessage] } : c
       )
     );
-     // TODO: API call to persist the message
+
+    try {
+        const response = await fetch('/api/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                case_id: selectedConvId,
+                sender_type: 'agent',
+                content: message.content,
+                user_id: agent.id,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to send message');
+        }
+
+        const savedMessage = await response.json();
+
+        // Replace temporary message with saved one
+        setConversations(prev =>
+            prev.map(c => {
+                if (c.id === selectedConvId) {
+                    return {
+                        ...c,
+                        messages: c.messages.map(m => m.id === tempId ? savedMessage : m)
+                    };
+                }
+                return c;
+            })
+        );
+        // After sending message, refresh conversations to get the latest order
+        fetchConversations();
+
+
+    } catch (error) {
+        console.error("Failed to send message:", error);
+        toast({ variant: 'destructive', title: '错误', description: '发送消息失败。' });
+        // Revert optimistic update
+        setConversations(prev =>
+            prev.map(c =>
+                c.id === selectedConvId ? { ...c, messages: c.messages.filter(m => m.id !== tempId) } : c
+            )
+        );
+    }
   };
 
-  const handleUpdateStatus = (status: 'open' | 'in-progress' | 'resolved') => {
+  const handleUpdateStatus = async (status: 'open' | 'in-progress' | 'resolved') => {
     if (!selectedConvId) return;
 
+    const originalConversations = conversations;
+    
+    // Optimistic update
     setConversations(prev =>
         prev.map(c =>
             c.id === selectedConvId && c.case ? { ...c, case: { ...c.case, status } } : c
         )
     );
-     // TODO: API call to persist the status change
+
+    try {
+      const response = await fetch(`/api/cases/${selectedConvId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update status');
+      }
+      toast({ title: '成功', description: '案例状态已更新。' });
+      fetchConversations();
+    } catch (error) {
+       console.error("Failed to update status:", error);
+       toast({ variant: 'destructive', title: '错误', description: '更新状态失败。' });
+       setConversations(originalConversations); // Revert on failure
+    }
   };
   
   const handleSuggestionClick = (suggestion: string) => {
@@ -98,7 +173,7 @@ export default function DashboardPage() {
 
   if (loading || !agent) {
     return (
-        <div className="p-4 h-full">
+        <div className="w-full h-full p-4">
              <Skeleton className="h-full w-full" />
         </div>
     )
@@ -118,3 +193,5 @@ export default function DashboardPage() {
       />
   );
 }
+
+    
