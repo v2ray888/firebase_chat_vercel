@@ -98,14 +98,13 @@ export default function DashboardPage() {
 
   if (loading || !agent) {
     return (
-        <div className="p-4 grid gap-4 h-full items-stretch">
+        <div className="p-4 h-full">
              <Skeleton className="h-full w-full" />
         </div>
     )
   }
 
   return (
-    <div className="h-full">
       <ChatLayout
         conversations={conversations}
         selectedConversation={selectedConversation}
@@ -117,6 +116,5 @@ export default function DashboardPage() {
         onSuggestionClick={handleSuggestionClick}
         toggleRightPanel={() => setIsRightPanelOpen(prev => !prev)}
       />
-    </div>
   );
 }

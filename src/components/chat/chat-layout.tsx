@@ -43,7 +43,7 @@ export function ChatLayout({
   }
 
   return (
-    <ResizablePanelGroup direction="horizontal" className="h-full items-stretch">
+    <ResizablePanelGroup direction="horizontal" className="h-full items-stretch bg-background p-4">
       <ResizablePanel defaultSize={25} minSize={20} maxSize={30}>
         <Card className="h-full">
           <ConversationList
@@ -55,7 +55,7 @@ export function ChatLayout({
       </ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize={75}>
-        <div className="flex h-full">
+        <div className="flex h-full pl-4">
           <div className="flex-1">
             {selectedConversation ? (
               <Card className="flex h-full flex-col">
@@ -75,13 +75,13 @@ export function ChatLayout({
           </div>
           <div
             className={cn(
-              'transition-all duration-300 ease-in-out',
-              isRightPanelOpen ? 'w-80' : 'w-0',
+              'transition-all duration-300 ease-in-out h-full',
+              isRightPanelOpen ? 'w-80 ml-4' : 'w-0',
               'overflow-hidden'
             )}
           >
             {selectedConversation && (
-              <Card className="flex h-full flex-col ml-2">
+              <Card className="flex h-full flex-col">
                 <div className="flex-shrink-0">
                   <CaseDetails
                     conversation={selectedConversation}

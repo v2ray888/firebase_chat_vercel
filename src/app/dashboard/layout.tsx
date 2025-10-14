@@ -81,12 +81,12 @@ export default function DashboardLayout({
           </SidebarContent>
         </Sidebar>
 
-        <SidebarInset className="flex flex-1 flex-col bg-background">
+        <div className="flex flex-1 flex-col">
             <DashboardHeader />
-            <main className="h-[calc(100vh-var(--header-height))]">
+            <main className="flex-1 overflow-hidden">
               {children}
             </main>
-        </SidebarInset>
+        </div>
       </div>
     </SidebarProvider>
   )
