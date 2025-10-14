@@ -7,69 +7,51 @@ import { ChatWindow } from '@/components/chat/chat-window';
 import { CaseDetails } from '@/components/chat/case-details';
 import { AiSuggestions } from '@/components/chat/ai-suggestions';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function DashboardPage() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConvId, setSelectedConvId] = useState<string | null>(null);
   const [agent, setAgent] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock fetching data. In a real app, this would be an API call.
-    const mockCustomers: Customer[] = [
-        { id: 'cust-1', name: 'Jamie Robert', email: 'jamie.robert@example.com', avatar: 'https://picsum.photos/seed/101/40/40' },
-        { id: 'cust-2', name: 'Pat Taylor', email: 'pat.taylor@example.com', avatar: 'https://picsum.photos/seed/102/40/40' },
-        { id: 'cust-3', name: 'Chris Garcia', email: 'chris.garcia@example.com', avatar: 'https://picsum.photos/seed/103/40/40' },
-        { id: 'cust-4', name: 'Taylor Miller', email: 'taylor.miller@example.com', avatar: 'https://picsum.photos/seed/104/40/40' },
-    ];
-    
-    const initialConversations: Conversation[] = [
-      {
-        id: 'conv-1',
-        customer: mockCustomers[0],
-        messages: [
-          { id: 'msg-1-1', sender: 'user', content: '你好，我最近的订单遇到了问题。还没有送达。', timestamp: new Date(Date.now() - 1000 * 60 * 25).toISOString() },
-          { id: 'msg-1-2', sender: 'agent', agentId: 'user-1', content: '你好 Jamie，听到这个消息我很难过。您能提供您的订单号吗？', timestamp: new Date(Date.now() - 1000 * 60 * 23).toISOString() },
-          { id: 'msg-1-3', sender: 'user', content: '当然，是 #12345XYZ。', timestamp: new Date(Date.now() - 1000 * 60 * 22).toISOString() },
-          { id: 'msg-1-4', sender: 'agent', agentId: 'user-1', content: '谢谢你。让我为你查询一下状态。', timestamp: new Date(Date.now() - 1000 * 60 * 21).toISOString() },
-          { id: 'msg-1-5', sender: 'user', content: '好的，我等着。', timestamp: new Date(Date.now() - 1000 * 60 * 1).toISOString() },
-        ],
-        case: { id: 'case-1', status: 'in-progress', summary: '关于延迟订单 #12345XYZ 的查询。' },
-      },
-      {
-        id: 'conv-2',
-        customer: mockCustomers[1],
-        messages: [
-          { id: 'msg-2-1', sender: 'user', content: '我想退货。', timestamp: new Date(Date.now() - 1000 * 60 * 120).toISOString() },
-          { id: 'msg-2-2', sender: 'agent', agentId: 'user-2', content: '我可以帮忙。您想退货的商品是什么？', timestamp: new Date(Date.now() - 1000 * 60 * 118).toISOString() },
-        ],
-        case: { id: 'case-2', status: 'open', summary: '未指明商品的退货请求。' },
-      },
-      {
-        id: 'conv-3',
-        customer: mockCustomers[2],
-        messages: [
-          { id: 'msg-3-1', sender: 'user', content: '我的优惠码无效。', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString() },
-          { id: 'msg-3-2', sender: 'system', content: '此对话已由 Alex Doe 解决。', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 23).toISOString() },
-        ],
-        case: { id: 'case-3', status: 'resolved', summary: '优惠码应用问题。' },
-      },
-      {
-        id: 'conv-4',
-        customer: mockCustomers[3],
-        messages: [
-          { id: 'msg-4-1', sender: 'user', content: '你们向加拿大发货吗？', timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString() },
-        ],
-        case: { id: 'case-4', status: 'open', summary: '关于国际运输的问题。' },
-      },
-    ];
+    async function fetchData() {
+      setLoading(true);
+      try {
+        const [convResponse, agentResponse] = await Promise.all([
+          fetch('/api/conversations'),
+          // In a real app, you'd fetch the currently logged-in agent
+          fetch('/api/users').then(res => res.json().then(users => users.find((u: User) => u.email === 'alex.doe@example.com')))
+        ]);
+        
+        if (!convResponse.ok) {
+          throw new Error('Failed to fetch conversations');
+        }
 
-    const mockAgent: User = { id: 'user-1', name: 'Alex Doe', email: 'alex.doe@example.com', avatar: 'https://picsum.photos/seed/1/40/40', role: 'agent', status: 'online' };
+        const convData: Conversation[] = await convResponse.json();
+        
+        setConversations(convData);
+        if (convData.length > 0) {
+          setSelectedConvId(convData[0].id);
+        }
 
-    setConversations(initialConversations);
-    if (initialConversations.length > 0) {
-        setSelectedConvId(initialConversations[0].id);
+        if (agentResponse) {
+          setAgent(agentResponse);
+        } else {
+          // Fallback or handle case where agent is not found
+           const mockAgent: User = { id: '72890a1a-4530-4355-8854-82531580e0a5', name: 'Alex Doe', email: 'alex.doe@example.com', avatar: 'https://picsum.photos/seed/1/40/40', role: 'agent', status: 'online' };
+           setAgent(mockAgent);
+        }
+
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        // Optionally, set some error state to show in the UI
+      } finally {
+        setLoading(false);
+      }
     }
-    setAgent(mockAgent);
+    fetchData();
   }, []);
 
   const selectedConversation = conversations.find(c => c.id === selectedConvId) || null;
@@ -78,14 +60,15 @@ export default function DashboardPage() {
     setSelectedConvId(conversation.id);
   };
 
-  const handleSendMessage = (message: Omit<Message, 'id' | 'timestamp'>) => {
+  const handleSendMessage = (message: Omit<Message, 'id' | 'timestamp' | 'case_id'>) => {
     if (!selectedConvId || !agent) return;
 
     const newMessage: Message = {
       ...message,
       id: `msg-${Date.now()}`,
       timestamp: new Date().toISOString(),
-      agentId: agent.id,
+      case_id: selectedConvId,
+      user_id: agent.id,
     };
 
     setConversations(prev =>
@@ -93,6 +76,7 @@ export default function DashboardPage() {
         c.id === selectedConvId ? { ...c, messages: [...c.messages, newMessage] } : c
       )
     );
+     // TODO: API call to persist the message
   };
 
   const handleUpdateStatus = (status: 'open' | 'in-progress' | 'resolved') => {
@@ -103,18 +87,46 @@ export default function DashboardPage() {
             c.id === selectedConvId && c.case ? { ...c, case: { ...c.case, status } } : c
         )
     );
+     // TODO: API call to persist the status change
   };
   
   const handleSuggestionClick = (suggestion: string) => {
     if (!agent) return;
     handleSendMessage({
-        sender: 'agent',
+        sender_type: 'agent',
         content: suggestion,
-        agentId: agent.id,
+        user_id: agent.id,
     });
   };
 
-  const lastCustomerMessage = selectedConversation?.messages.filter(m => m.sender === 'user').slice(-1)[0];
+  const lastCustomerMessage = selectedConversation?.messages.filter(m => m.sender_type === 'user').slice(-1)[0];
+
+  if (loading) {
+    return (
+        <div className="flex h-full max-h-[calc(100vh-4rem)] items-stretch">
+             <div className="w-1/4 p-4 space-y-2 border-r">
+                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-20 w-full" />
+             </div>
+             <div className="w-1/2 flex flex-col">
+                <div className="flex-1 p-4 space-y-4">
+                    <Skeleton className="h-12 w-3/4" />
+                    <Skeleton className="h-12 w-3/4 ml-auto" />
+                    <Skeleton className="h-12 w-3/4" />
+                </div>
+                <div className="p-4 border-t">
+                    <Skeleton className="h-20 w-full" />
+                </div>
+             </div>
+             <div className="w-1/4 p-4 space-y-4 border-l">
+                <Skeleton className="h-32 w-full" />
+                <Skeleton className="h-48 w-full" />
+             </div>
+        </div>
+    )
+  }
 
   return (
     <ResizablePanelGroup direction="horizontal" className="h-full max-h-[calc(100vh-4rem)] items-stretch">
@@ -149,7 +161,7 @@ export default function DashboardPage() {
             <div className="flex-grow overflow-y-auto">
                 <AiSuggestions
                     customerQuery={lastCustomerMessage?.content || ''}
-                    chatHistory={selectedConversation.messages.map(m => `${m.sender}: ${m.content}`).join('\n')}
+                    chatHistory={selectedConversation.messages.map(m => `${m.sender_type}: ${m.content}`).join('\n')}
                     onSuggestionClick={handleSuggestionClick}
                 />
             </div>

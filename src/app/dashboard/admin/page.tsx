@@ -40,26 +40,55 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Skeleton } from "@/components/ui/skeleton";
 
 
 export default function AdminPage() {
   const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Note: This is a placeholder for fetching real data.
-  // In a real application, you would fetch this from your API.
   useEffect(() => {
     const fetchUsers = async () => {
-        // This is a mock implementation. Replace with your actual data fetching logic.
-        const mockUsers: User[] = [
-            { id: 'user-1', name: 'Alex Doe', email: 'alex.doe@example.com', avatar: 'https://picsum.photos/seed/1/40/40', role: 'agent', status: 'online' },
-            { id: 'user-2', name: 'Sam Smith', email: 'sam.smith@example.com', avatar: 'https://picsum.photos/seed/2/40/40', role: 'agent', status: 'offline' },
-            { id: 'user-3', name: 'Jordan Lee', email: 'jordan.lee@example.com', avatar: 'https://picsum.photos/seed/3/40/40', role: 'admin', status: 'online' },
-            { id: 'user-4', name: 'Casey Brown', email: 'casey.brown@example.com', avatar: 'https://picsum.photos/seed/4/40/40', role: 'agent', status: 'online' },
-          ];
-        setUsers(mockUsers);
+        setLoading(true);
+        try {
+            const response = await fetch('/api/users');
+            if (!response.ok) {
+                throw new Error('Failed to fetch users');
+            }
+            const data = await response.json();
+            setUsers(data);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
     };
     fetchUsers();
   }, []);
+
+  if (loading) {
+    return (
+        <div className="container mx-auto p-4 md:p-6 lg:p-8">
+            <div className="flex items-center justify-between mb-6">
+                <div>
+                    <Skeleton className="h-8 w-48 mb-2" />
+                    <Skeleton className="h-4 w-64" />
+                </div>
+                <Skeleton className="h-10 w-28" />
+            </div>
+            <Card>
+                <CardContent className="p-0">
+                   <div className="p-4 space-y-4">
+                        <Skeleton className="h-12 w-full" />
+                        <Skeleton className="h-12 w-full" />
+                        <Skeleton className="h-12 w-full" />
+                        <Skeleton className="h-12 w-full" />
+                   </div>
+                </CardContent>
+            </Card>
+        </div>
+    )
+  }
 
   return (
     <div className="container mx-auto p-4 md:p-6 lg:p-8">

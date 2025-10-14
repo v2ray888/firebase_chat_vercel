@@ -42,11 +42,16 @@ export function AiSuggestions({ customerQuery, chatHistory, onSuggestionClick }:
       }
     }
 
-    const timer = setTimeout(() => {
-        getSuggestions();
-    }, 500); // Debounce to avoid rapid calls
-
-    return () => clearTimeout(timer);
+    if (customerQuery) {
+        const timer = setTimeout(() => {
+            getSuggestions();
+        }, 500); // Debounce to avoid rapid calls
+        return () => clearTimeout(timer);
+    } else {
+        setSuggestions([]);
+        setLoading(false);
+    }
+    
   }, [customerQuery, chatHistory]);
 
   return (
@@ -65,6 +70,9 @@ export function AiSuggestions({ customerQuery, chatHistory, onSuggestionClick }:
         )}
         {!loading && suggestions.length === 0 && customerQuery && (
           <p className="text-sm text-muted-foreground">此查询没有可用的建议。</p>
+        )}
+         {!loading && suggestions.length === 0 && !customerQuery && (
+          <p className="text-sm text-muted-foreground">等待客户的下一条消息以生成建议。</p>
         )}
         {!loading &&
           suggestions.map((suggestion, index) => (

@@ -56,7 +56,7 @@ export function ConversationList({
               </div>
               {lastMessage && (
                 <div className="line-clamp-2 text-xs text-muted-foreground">
-                  {lastMessage.sender === 'agent' && '你: '}
+                  {lastMessage.sender_type === 'agent' && '你: '}
                   {lastMessage.content}
                 </div>
               )}
