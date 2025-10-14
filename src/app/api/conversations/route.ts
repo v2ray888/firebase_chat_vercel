@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { sql } from '@/lib/db';
 import type { Conversation, Case, Customer, Message } from '@/types';
 
 export async function GET() {
   try {
     // This query is complex. It groups messages by case and then constructs the conversation object.
-    const query = `
+    const rows = await sql`
         SELECT
             c.id as case_id,
             c.status as case_status,
@@ -34,9 +34,7 @@ export async function GET() {
         ORDER BY MAX(m.timestamp) DESC;
     `;
 
-    const result = await db.query(query, []);
-
-    const conversations: Conversation[] = result.rows.map(row => {
+    const conversations: Conversation[] = rows.map((row: any) => {
         const customer: Customer = {
             id: row.customer_id,
             name: row.customer_name,
@@ -53,7 +51,7 @@ export async function GET() {
             updated_at: row.case_updated_at,
         };
 
-        const messages: Message[] = row.messages || [];
+        const messages: Message[] = row.messages.filter((m: any) => m.id !== null) || [];
 
         return {
             id: row.case_id,

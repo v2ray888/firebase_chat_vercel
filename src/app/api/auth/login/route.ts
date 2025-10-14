@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { sql } from '@/lib/db';
 import bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
@@ -11,8 +11,8 @@ export async function POST(request: Request) {
     }
 
     // 查找用户
-    const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
-    const user = result.rows[0];
+    const result = await sql`SELECT * FROM users WHERE email = ${email}`;
+    const user = result[0];
 
     if (!user) {
       return NextResponse.json({ message: '无效的电子邮件或密码。' }, { status: 401 });

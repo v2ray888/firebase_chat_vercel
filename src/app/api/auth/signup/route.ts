@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { sql } from '@/lib/db';
 import bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
@@ -11,8 +11,8 @@ export async function POST(request: Request) {
     }
 
     // 检查用户是否已存在
-    const existingUser = await db.query('SELECT * FROM users WHERE email = $1', [email]);
-    if (existingUser.rows.length > 0) {
+    const existingUser = await sql`SELECT * FROM users WHERE email = ${email}`;
+    if (existingUser.length > 0) {
       return NextResponse.json({ message: '该电子邮件已被使用。' }, { status: 409 });
     }
 
@@ -21,16 +21,15 @@ export async function POST(request: Request) {
 
     // 将用户插入数据库
     const defaultAvatar = `https://picsum.photos/seed/${encodeURIComponent(email)}/40/40`;
-    const newUser = await db.query(
-      'INSERT INTO users (name, email, "password", avatar, "role", status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, name, email, "role"',
-      [name, email, hashedPassword, defaultAvatar, 'agent', 'offline']
-    );
+    const newUser = await sql`
+      INSERT INTO users (name, email, "password", avatar, "role", status) 
+      VALUES (${name}, ${email}, ${hashedPassword}, ${defaultAvatar}, 'agent', 'offline') 
+      RETURNING id, name, email, "role"
+    `;
 
-    return NextResponse.json({ user: newUser.rows[0] }, { status: 201 });
+    return NextResponse.json({ user: newUser[0] }, { status: 201 });
   } catch (error) {
     console.error('注册错误:', error);
     return NextResponse.json({ message: '内部服务器错误' }, { status: 500 });
   }
 }
-
-    
