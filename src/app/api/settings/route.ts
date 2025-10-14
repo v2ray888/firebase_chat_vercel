@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     // or update it if it does. This prevents race conditions and handles both creation and updates.
     const query = `
       INSERT INTO app_settings (id, primary_color, welcome_message, offline_message, accept_new_chats)
-      VALUES (1, $1, $2, $3, $4)
+      VALUES ($1, $2, $3, $4, $5)
       ON CONFLICT (id) 
       DO UPDATE SET 
         primary_color = EXCLUDED.primary_color, 
@@ -51,7 +51,7 @@ export async function POST(request: Request) {
       RETURNING *;
     `;
     
-    const values = [primary_color, welcome_message, offline_message, accept_new_chats];
+    const values = [1, primary_color, welcome_message, offline_message, accept_new_chats];
     const result = await db.query(query, values);
 
     return NextResponse.json(result.rows[0], { status: 200 });
