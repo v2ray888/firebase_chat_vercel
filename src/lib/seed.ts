@@ -14,7 +14,7 @@ async function seed() {
     console.log('Seeding database...');
 
     // Clear existing data
-    await client.query('TRUNCATE users, customers, cases, messages RESTART IDENTITY CASCADE');
+    await client.query('TRUNCATE users, customers, cases, messages, app_settings RESTART IDENTITY CASCADE');
     console.log('Cleared existing data.');
 
     // Seed Users
@@ -96,6 +96,13 @@ async function seed() {
         }
     }
     console.log(`Seeded ${casesData.length} cases with messages.`);
+
+    // Seed App Settings
+    await client.query(
+        `INSERT INTO app_settings (id, primary_color, welcome_message, offline_message, accept_new_chats)
+         VALUES (1, '#64B5F6', '您好！我们能为您做些什么？', '我们目前不在。请留言，我们会尽快回复您。', true)`
+    );
+    console.log('Seeded app settings.');
 
 
     await client.query('COMMIT');
