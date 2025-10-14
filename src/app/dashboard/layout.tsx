@@ -30,7 +30,7 @@ export default function DashboardLayout({
   return (
     <SidebarProvider>
       <div 
-        className="flex min-h-screen bg-background"
+        className="flex h-screen bg-background"
         style={{ '--header-height': '4rem' } as React.CSSProperties}
       >
         <Sidebar className="bg-muted/40 border-r">
