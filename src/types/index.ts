@@ -5,6 +5,7 @@ export type User = {
   avatar: string;
   role: 'agent' | 'admin';
   status: 'online' | 'offline';
+  password?: string;
 };
 
 export type Customer = {
