@@ -11,7 +11,7 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "db:setup": "node -e \"require('dotenv').config(); const { Pool } = require('pg'); const fs = require('fs'); const sql = fs.readFileSync('src/lib/schema.sql').toString(); const pool = new Pool({ connectionString: process.env.POSTGRES_URL }); pool.query(sql).then(() => console.log('Database setup complete.')).catch(err => console.error('Database setup failed:', err)).finally(() => pool.end());\"",
-    "db:seed": "node --loader ts-node/esm src/lib/seed.ts"
+    "db:seed": "node --import tsx src/lib/seed.ts"
   },
   "dependencies": {
     "@genkit-ai/google-genai": "^1.20.0",
@@ -69,6 +69,7 @@
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "ts-node": "^10.9.2",
+    "tsx": "^4.16.2",
     "typescript": "^5"
   }
 }
