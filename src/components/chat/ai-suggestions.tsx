@@ -2,7 +2,7 @@
 
 import { aiSuggestedResponses } from '@/ai/flows/ai-suggested-responses';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Bot } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -57,8 +57,8 @@ export function AiSuggestions({ customerQuery, chatHistory, onSuggestionClick }:
   return (
     <div className="border-t">
       <CardHeader className="flex-row items-center gap-2">
-        <Bot className="h-5 w-5 text-accent" />
-        <CardTitle className="font-headline">AI 建议</CardTitle>
+        <Bot className="h-5 w-5 text-primary" />
+        <CardTitle className="font-headline text-base">AI 建议</CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
         {loading && (

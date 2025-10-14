@@ -6,17 +6,20 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import type { Conversation, Message } from '@/types';
-import { Send, Bot } from 'lucide-react';
+import { Send, PanelRightClose, PanelRightOpen } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { format } from 'date-fns';
+import { Card, CardHeader, CardTitle, CardDescription } from '../ui/card';
 
 interface ChatWindowProps {
   conversation: Conversation;
   onSendMessage: (message: Omit<Message, 'id' | 'timestamp' | 'case_id' | 'customer_id' >) => void;
   agentAvatar: string;
+  isRightPanelOpen: boolean;
+  toggleRightPanel: () => void;
 }
 
-export function ChatWindow({ conversation, onSendMessage, agentAvatar }: ChatWindowProps) {
+export function ChatWindow({ conversation, onSendMessage, agentAvatar, isRightPanelOpen, toggleRightPanel }: ChatWindowProps) {
   const [newMessage, setNewMessage] = useState('');
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
@@ -41,12 +44,24 @@ export function ChatWindow({ conversation, onSendMessage, agentAvatar }: ChatWin
     }
   };
 
-  const handleSuggestionClick = (suggestion: string) => {
-    setNewMessage(suggestion);
-  };
-
   return (
     <div className="flex h-full flex-col">
+      <CardHeader className="flex flex-row items-center justify-between border-b">
+        <div className="flex items-center space-x-4">
+          <Avatar>
+            <AvatarImage src={conversation.customer.avatar} alt={conversation.customer.name} />
+            <AvatarFallback>{conversation.customer.name.charAt(0)}</AvatarFallback>
+          </Avatar>
+          <div>
+            <CardTitle className="text-lg">{conversation.customer.name}</CardTitle>
+            <CardDescription>{conversation.customer.email}</CardDescription>
+          </div>
+        </div>
+        <Button variant="ghost" size="icon" onClick={toggleRightPanel}>
+          {isRightPanelOpen ? <PanelRightClose /> : <PanelRightOpen />}
+          <span className="sr-only">{isRightPanelOpen ? '隐藏详情' : '显示详情'}</span>
+        </Button>
+      </CardHeader>
       <ScrollArea className="flex-1" ref={scrollAreaRef}>
         <div className="p-4 space-y-4">
           {conversation.messages.map((message, index) => (

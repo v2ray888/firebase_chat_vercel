@@ -1,7 +1,7 @@
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import type { Conversation } from '@/types';
@@ -21,7 +21,7 @@ export function CaseDetails({ conversation, onUpdateStatus }: CaseDetailsProps) 
   return (
     <div className="h-full">
       <CardHeader>
-        <CardTitle className="font-headline">案例详情</CardTitle>
+        <CardTitle className="font-headline text-base">案例详情</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center gap-3">
