@@ -15,7 +15,7 @@ async function seed() {
 
     // Clear existing data from dependent tables first
     await client.query('TRUNCATE users, customers, cases, messages RESTART IDENTITY CASCADE');
-    // Clear settings table separately
+    // Clear settings table separately and safely
     await client.query('DELETE FROM app_settings');
     console.log('Cleared existing data.');
 

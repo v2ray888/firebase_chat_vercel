@@ -17,13 +17,14 @@ export async function GET() {
     return NextResponse.json(result.rows[0]);
   } catch (error) {
     console.error('Failed to fetch settings:', error);
-    // Return default settings on error as a fallback
+    // Return default settings on error as a fallback, with a 200 OK status
+    // so the frontend can still render.
     return NextResponse.json({
         primary_color: '#64B5F6',
         welcome_message: '您好！我们能为您做些什么？',
         offline_message: '我们目前不在。请留言，我们会尽快回复您。',
         accept_new_chats: true,
-      }, { status: 500 });
+      });
   }
 }
 
