@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 
@@ -23,31 +23,33 @@ export default function SettingsPage() {
     const [offlineMessage, setOfflineMessage] = useState('我们目前不在。请留言，我们会尽快回复您。');
     const [acceptNewChats, setAcceptNewChats] = useState(true);
 
-    useEffect(() => {
-      async function fetchSettings() {
-        try {
-          const response = await fetch('/api/settings');
-          if (!response.ok) {
-            throw new Error('无法加载设置');
-          }
-          const data = await response.json();
-          setPrimaryColor(data.primary_color);
-          setWelcomeMessage(data.welcome_message);
-          setOfflineMessage(data.offline_message);
-          setAcceptNewChats(data.accept_new_chats);
-        } catch (error) {
-          console.error(error);
-          toast({
-            variant: "destructive",
-            title: "加载失败",
-            description: "无法加载应用设置。",
-          });
-        } finally {
-          setLoading(false);
+    const fetchSettings = useCallback(async () => {
+      setLoading(true);
+      try {
+        const response = await fetch('/api/settings');
+        if (!response.ok) {
+          throw new Error('无法加载设置');
         }
+        const data = await response.json();
+        setPrimaryColor(data.primary_color);
+        setWelcomeMessage(data.welcome_message);
+        setOfflineMessage(data.offline_message);
+        setAcceptNewChats(data.accept_new_chats);
+      } catch (error) {
+        console.error(error);
+        toast({
+          variant: "destructive",
+          title: "加载失败",
+          description: "无法加载应用设置。请刷新页面重试。",
+        });
+      } finally {
+        setLoading(false);
       }
-      fetchSettings();
     }, [toast]);
+
+    useEffect(() => {
+      fetchSettings();
+    }, [fetchSettings]);
 
     const handleSaveChanges = async () => {
         setSaving(true);
@@ -64,7 +66,8 @@ export default function SettingsPage() {
             });
 
             if (!response.ok) {
-                throw new Error('保存失败');
+                const errorData = await response.json();
+                throw new Error(errorData.message || '保存失败');
             }
 
             toast({
@@ -72,12 +75,12 @@ export default function SettingsPage() {
                 description: "您的更改已成功保存。",
             });
 
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
             toast({
                 variant: "destructive",
                 title: "错误",
-                description: "保存设置失败。",
+                description: `保存设置失败: ${error.message}`,
             });
         } finally {
             setSaving(false);
@@ -104,122 +107,124 @@ export default function SettingsPage() {
     }
 
     return (
-        <div className="container mx-auto p-4 md:p-6 lg:p-8">
+        <div className="container mx-auto p-4 md:p-6 lg:p-8 h-full flex flex-col">
             <h1 className="text-3xl font-bold font-headline mb-6">设置</h1>
-            <Tabs defaultValue="appearance">
-                <TabsList className="grid w-full grid-cols-3 mb-6 max-w-lg">
-                    <TabsTrigger value="appearance">外观</TabsTrigger>
-                    <TabsTrigger value="availability">可用性</TabsTrigger>
-                    <TabsTrigger value="responses">自动回复</TabsTrigger>
-                </TabsList>
+            <div className="flex-1">
+                <Tabs defaultValue="appearance" className="h-full flex flex-col">
+                    <TabsList className="grid w-full grid-cols-3 mb-6 max-w-lg">
+                        <TabsTrigger value="appearance">外观</TabsTrigger>
+                        <TabsTrigger value="availability">可用性</TabsTrigger>
+                        <TabsTrigger value="responses">自动回复</TabsTrigger>
+                    </TabsList>
 
-                <TabsContent value="appearance">
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <Card>
+                    <TabsContent value="appearance" className="flex-1">
+                        <div className="grid md:grid-cols-2 gap-6 h-full">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>小部件自定义</CardTitle>
+                                    <CardDescription>自定义您的聊天小部件的外观和感觉。</CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="primary-color">主色</Label>
+                                        <div className="flex items-center gap-2">
+                                            <Input
+                                                id="primary-color-hex"
+                                                value={primaryColor}
+                                                onChange={(e) => setPrimaryColor(e.target.value)}
+                                                className="w-32"
+                                                disabled={saving}
+                                            />
+                                            <Input
+                                                id="primary-color"
+                                                type="color"
+                                                value={primaryColor}
+                                                onChange={(e) => setPrimaryColor(e.target.value)}
+                                                className="w-10 h-10 p-1"
+                                                disabled={saving}
+                                            />
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>小部件预览</CardTitle>
+                                    <CardDescription>这是您的小部件向客户显示的方式。</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <WidgetPreview primaryColor={primaryColor} welcomeMessage={welcomeMessage} />
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </TabsContent>
+                    
+                    <TabsContent value="availability" className="flex-1">
+                        <Card className="max-w-lg">
                             <CardHeader>
-                                <CardTitle>小部件自定义</CardTitle>
-                                <CardDescription>自定义您的聊天小部件的外观和感觉。</CardDescription>
+                                <CardTitle>代理可用性</CardTitle>
+                                <CardDescription>设置您团队的在线时间和离线状态。</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="primary-color">主色</Label>
-                                    <div className="flex items-center gap-2">
-                                        <Input
-                                            id="primary-color-hex"
-                                            value={primaryColor}
-                                            onChange={(e) => setPrimaryColor(e.target.value)}
-                                            className="w-32"
-                                            disabled={saving}
-                                        />
-                                        <Input
-                                            id="primary-color"
-                                            type="color"
-                                            value={primaryColor}
-                                            onChange={(e) => setPrimaryColor(e.target.value)}
-                                            className="w-10 h-10 p-1"
-                                            disabled={saving}
-                                        />
+                                <div className="flex items-center justify-between rounded-lg border p-4">
+                                    <div className="space-y-0.5">
+                                        <Label htmlFor="accept-chats" className="text-base">接受新聊天</Label>
+                                        <p className="text-sm text-muted-foreground">
+                                            关闭此项可对新访客显示为离线。
+                                        </p>
                                     </div>
+                                    <Switch 
+                                        id="accept-chats"
+                                        checked={acceptNewChats}
+                                        onCheckedChange={setAcceptNewChats}
+                                        disabled={saving}
+                                    />
                                 </div>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                             <CardHeader>
-                                <CardTitle>小部件预览</CardTitle>
-                                <CardDescription>这是您的小部件向客户显示的方式。</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <WidgetPreview primaryColor={primaryColor} welcomeMessage={welcomeMessage} />
-                            </CardContent>
-                        </Card>
-                    </div>
-                </TabsContent>
-                
-                <TabsContent value="availability">
-                    <Card className="max-w-lg">
-                        <CardHeader>
-                            <CardTitle>代理可用性</CardTitle>
-                            <CardDescription>设置您团队的在线时间和离线状态。</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="flex items-center justify-between rounded-lg border p-4">
-                                <div className="space-y-0.5">
-                                    <Label htmlFor="accept-chats" className="text-base">接受新聊天</Label>
+                                <div className="space-y-2 pt-4">
+                                    <Label>办公时间（即将推出）</Label>
                                     <p className="text-sm text-muted-foreground">
-                                        关闭此项可对新访客显示为离线。
+                                        根据时间表自动设置您的可用性。此功能计划在将来的更新中推出。
                                     </p>
                                 </div>
-                                <Switch 
-                                    id="accept-chats"
-                                    checked={acceptNewChats}
-                                    onCheckedChange={setAcceptNewChats}
-                                    disabled={saving}
-                                />
-                            </div>
-                            <div className="space-y-2 pt-4">
-                                <Label>办公时间（即将推出）</Label>
-                                <p className="text-sm text-muted-foreground">
-                                    根据时间表自动设置您的可用性。此功能计划在将来的更新中推出。
-                                </p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
 
-                <TabsContent value="responses">
-                    <Card className="max-w-lg">
-                        <CardHeader>
-                            <CardTitle>自动聊天回复</CardTitle>
-                            <CardDescription>设置在特定情况下自动发送的消息。</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div className="space-y-2">
-                                <Label htmlFor="welcome-message">欢迎消息</Label>
-                                <Textarea
-                                    id="welcome-message"
-                                    placeholder="输入欢迎消息..."
-                                    value={welcomeMessage}
-                                    onChange={(e) => setWelcomeMessage(e.target.value)}
-                                    disabled={saving}
-                                />
-                                <p className="text-sm text-muted-foreground">此消息在客户首次打开聊天时发送。</p>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="offline-message">离线消息</Label>
-                                <Textarea
-                                    id="offline-message"
-                                    placeholder="输入离线消息..."
-                                    value={offlineMessage}
-                                    onChange={(e) => setOfflineMessage(e.target.value)}
-                                    disabled={saving}
-                                />
-                                <p className="text-sm text-muted-foreground">如果客户在您离线时尝试聊天，则会显示此消息。</p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-            </Tabs>
-            <div className="mt-6 flex justify-start max-w-lg">
+                    <TabsContent value="responses" className="flex-1">
+                        <Card className="max-w-lg">
+                            <CardHeader>
+                                <CardTitle>自动聊天回复</CardTitle>
+                                <CardDescription>设置在特定情况下自动发送的消息。</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="space-y-2">
+                                    <Label htmlFor="welcome-message">欢迎消息</Label>
+                                    <Textarea
+                                        id="welcome-message"
+                                        placeholder="输入欢迎消息..."
+                                        value={welcomeMessage}
+                                        onChange={(e) => setWelcomeMessage(e.target.value)}
+                                        disabled={saving}
+                                    />
+                                    <p className="text-sm text-muted-foreground">此消息在客户首次打开聊天时发送。</p>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="offline-message">离线消息</Label>
+                                    <Textarea
+                                        id="offline-message"
+                                        placeholder="输入离线消息..."
+                                        value={offlineMessage}
+                                        onChange={(e) => setOfflineMessage(e.target.value)}
+                                        disabled={saving}
+                                    />
+                                    <p className="text-sm text-muted-foreground">如果客户在您离线时尝试聊天，则会显示此消息。</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+                </Tabs>
+            </div>
+            <div className="mt-6 flex justify-start max-w-lg flex-shrink-0">
                 <Button onClick={handleSaveChanges} disabled={saving} className="bg-primary hover:bg-primary/90 text-primary-foreground">
                     {saving ? '保存中...' : '保存更改'}
                 </Button>
