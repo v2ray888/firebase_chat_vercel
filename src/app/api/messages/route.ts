@@ -25,9 +25,9 @@ function toCamelCase(obj: any): any {
 
 export async function POST(request: Request) {
   try {
-    const { caseId, senderType, content, userId, customerId, imageUrl } = await request.json();
+    const { case_id, sender_type, content, user_id, customer_id, image_url } = await request.json();
 
-    if (!caseId || !senderType || !content) {
+    if (!case_id || !sender_type || !content) {
       return NextResponse.json({ message: '缺少必需字段。' }, { status: 400 });
     }
 
@@ -36,13 +36,13 @@ export async function POST(request: Request) {
     // The sql template tag automatically handles mapping camelCase (e.g., caseId)
     // to snake_case (e.g., case_id) for insertion.
     const messageData = {
-      caseId,
-      senderType,
+      case_id,
+      sender_type,
       content,
       timestamp,
-      userId: userId || null,
-      customerId: customerId || null,
-      imageUrl: imageUrl || null
+      user_id: user_id || null,
+      customer_id: customer_id || null,
+      image_url: image_url || null
     };
 
     const result = await sql`
@@ -52,7 +52,7 @@ export async function POST(request: Request) {
 
     // Also update the case's updated_at timestamp
     await sql`
-        UPDATE cases SET updated_at = ${timestamp} WHERE id = ${caseId}
+        UPDATE cases SET updated_at = ${timestamp} WHERE id = ${case_id}
     `;
 
     // This helps in re-fetching the conversation list to show the latest message on top
