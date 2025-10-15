@@ -40,7 +40,7 @@ export default function IntegrationPage() {
             if (!response.ok) throw new Error('无法获取网站列表');
             const data = await response.json();
             setWebsites(data);
-            if (data.length > 0) {
+            if (data.length > 0 && !selectedWebsite) {
                 setSelectedWebsite(data[0]);
             }
         } catch (error: any) {
@@ -82,17 +82,28 @@ export default function IntegrationPage() {
                 const errorData = await response.json();
                 throw new Error(errorData.message || '添加网站失败');
             }
+            const newSite = await response.json();
             toast({ title: '成功', description: '网站已成功添加。' });
             setIsDialogOpen(false);
             setNewWebsiteName('');
             setNewWebsiteUrl('');
-            fetchWebsites(); // Refresh the list
+            // Refresh list and select the new site
+            const updatedWebsites = [...websites, newSite];
+            setWebsites(updatedWebsites);
+            setSelectedWebsite(newSite);
         } catch (error: any) {
             toast({ variant: 'destructive', title: '操作失败', description: error.message });
         } finally {
             setFormLoading(false);
         }
     };
+
+    // Placeholder for delete functionality
+    const handleDeleteWebsite = (websiteId: string) => {
+        // This is a placeholder. A real implementation would call a DELETE API endpoint.
+        console.log(`TODO: Delete website with ID: ${websiteId}`);
+        toast({ title: '功能待定', description: '删除功能即将推出！' });
+    }
 
 
     return (
@@ -154,7 +165,7 @@ export default function IntegrationPage() {
                                                 <p className="text-sm text-muted-foreground">{site.url}</p>
                                             </div>
                                         </div>
-                                         <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive">
+                                         <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive" onClick={(e) => { e.stopPropagation(); handleDeleteWebsite(site.id); }}>
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
                                     </button>

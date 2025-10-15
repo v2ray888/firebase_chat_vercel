@@ -3,6 +3,7 @@ import { sql } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 
 // Mock user ID for now. In a real app, this would come from the session.
+// This ID must match a seeded user ID in `src/lib/seed.ts`.
 const MOCK_USER_ID = '72890a1a-4530-4355-8854-82531580e0a5';
 
 export async function GET() {
@@ -27,9 +28,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: '网站名称和URL是必需的。' }, { status: 400 });
     }
 
+    const websiteData = {
+        name,
+        url,
+        userId: MOCK_USER_ID
+    };
+
     const newWebsite = await sql`
-      INSERT INTO websites (name, url, user_id) 
-      VALUES (${name}, ${url}, ${MOCK_USER_ID})
+      INSERT INTO websites ${sql(websiteData, 'name', 'url', 'userId')}
       RETURNING *
     `;
     

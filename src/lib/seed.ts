@@ -83,6 +83,7 @@ async function seed() {
         welcome_message: '您好！我们能为您做些什么？',
         offline_message: '我们目前不在。请留言，我们会尽快回复您。',
         accept_new_chats: true,
+<<<<<<< HEAD
         widget_title: '客服支持',
         widget_subtitle: '我们通常在几分钟内回复',
         auto_open_widget: false,
@@ -95,6 +96,8 @@ async function seed() {
         away_message: '我现在不在，但我稍后会回复您。',
         enable_ai_suggestions: true,
         enable_image_upload: true  // 添加图片上传功能开关
+=======
+>>>>>>> 397514edb21c0d3505dba3525893063086b66a55
       };
       await sql`
           INSERT INTO app_settings ${sql(settingsData)}
@@ -103,6 +106,7 @@ async function seed() {
               welcome_message = EXCLUDED.welcome_message,
               offline_message = EXCLUDED.offline_message,
               accept_new_chats = EXCLUDED.accept_new_chats,
+<<<<<<< HEAD
               widget_title = EXCLUDED.widget_title,
               widget_subtitle = EXCLUDED.widget_subtitle,
               auto_open_widget = EXCLUDED.auto_open_widget,
@@ -115,6 +119,8 @@ async function seed() {
               away_message = EXCLUDED.away_message,
               enable_ai_suggestions = EXCLUDED.enable_ai_suggestions,
               enable_image_upload = EXCLUDED.enable_image_upload,
+=======
+>>>>>>> 397514edb21c0d3505dba3525893063086b66a55
               updated_at = CURRENT_TIMESTAMP
       `;
       

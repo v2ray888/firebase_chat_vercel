@@ -8,12 +8,22 @@ export async function GET() {
     let result = await sql`SELECT * FROM app_settings WHERE id = 1`;
     
     if (result.length === 0) {
+<<<<<<< HEAD
       // 创建默认设置
       result = await sql`
         INSERT INTO app_settings (id, primary_color, welcome_message, offline_message, accept_new_chats)
         VALUES (1, '#64B5F6', '您好！我们能为您做些什么？', '我们目前不在。请留言，我们会尽快回复您。', true)
         RETURNING *
       `;
+=======
+      return NextResponse.json({
+        id: 1,
+        primary_color: '#64B5F6',
+        welcome_message: '您好！我们能为您做些什么？',
+        offline_message: '我们目前不在。请留言，我们会尽快回复您。',
+        accept_new_chats: true,
+      });
+>>>>>>> 397514edb21c0d3505dba3525893063086b66a55
     }
     
     // 确保所有字段都存在，使用默认值填充缺失的字段
@@ -102,10 +112,22 @@ export async function POST(request: Request) {
     
     // 更新设置
     const result = await sql`
+<<<<<<< HEAD
       UPDATE app_settings 
       SET ${sql(updateData)}, updated_at = NOW()
       WHERE id = 1
       RETURNING *
+=======
+        INSERT INTO app_settings ${sql(settingsData, 'id', 'primary_color', 'welcome_message', 'offline_message', 'accept_new_chats')}
+        ON CONFLICT (id)
+        DO UPDATE SET
+            primary_color = EXCLUDED.primary_color,
+            welcome_message = EXCLUDED.welcome_message,
+            offline_message = EXCLUDED.offline_message,
+            accept_new_chats = EXCLUDED.accept_new_chats,
+            updated_at = CURRENT_TIMESTAMP
+        RETURNING *
+>>>>>>> 397514edb21c0d3505dba3525893063086b66a55
     `;
     
     if (result.length === 0) {
