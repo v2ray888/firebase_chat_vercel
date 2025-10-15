@@ -5,21 +5,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
-import type { AppSettings } from '@/hooks/use-settings';
+import { useSettingsContext } from '@/contexts/settings-context';
 
-interface SettingsAvailabilityPageProps {
-  settings?: AppSettings;
-  loading?: boolean;
-  saving?: boolean;
-  updateSettings?: (newValues: Partial<AppSettings>) => void;
-}
 
-export default function SettingsAvailabilityPage({
-  settings,
-  loading,
-  saving,
-  updateSettings,
-}: SettingsAvailabilityPageProps) {
+export default function SettingsAvailabilityPage() {
+  const { settings, loading, saving, updateSettings } = useSettingsContext();
+  
   if (loading || !settings || !updateSettings) {
     return (
         <div className="space-y-6">

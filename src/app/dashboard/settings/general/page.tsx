@@ -5,21 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { AppSettings } from '@/hooks/use-settings';
+import { useSettingsContext } from '@/contexts/settings-context';
 
-interface SettingsGeneralPageProps {
-  settings?: AppSettings;
-  loading?: boolean;
-  saving?: boolean;
-  updateSettings?: (newValues: Partial<AppSettings>) => void;
-}
 
-export default function SettingsGeneralPage({ 
-  settings, 
-  loading, 
-  saving, 
-  updateSettings 
-}: SettingsGeneralPageProps) {
+export default function SettingsGeneralPage() {
+  const { settings, loading, saving, updateSettings } = useSettingsContext();
 
   if (loading || !settings || !updateSettings) {
     return (

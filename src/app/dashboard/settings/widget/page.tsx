@@ -4,22 +4,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
-import type { AppSettings } from '@/hooks/use-settings';
+import { useSettingsContext } from '@/contexts/settings-context';
 
 
-interface SettingsWidgetPageProps {
-  settings?: AppSettings;
-  loading?: boolean;
-  saving?: boolean;
-  updateSettings?: (newValues: Partial<AppSettings>) => void;
-}
-
-export default function SettingsWidgetPage({
-  settings,
-  loading,
-  saving,
-  updateSettings,
-}: SettingsWidgetPageProps) {
+export default function SettingsWidgetPage() {
+  const { settings, loading, saving, updateSettings } = useSettingsContext();
 
   if (loading || !settings || !updateSettings) {
     return (
