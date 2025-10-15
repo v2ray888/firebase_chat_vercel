@@ -28,26 +28,25 @@ export function useSettings() {
     setLoading(true);
     try {
       const response = await fetch('/api/settings');
-      if (!response.ok) {
-        // If API returns an error, it might be because no settings exist yet.
-        // We can use default settings and not show an error toast.
-        // The GET handler should return defaults on error anyway.
-        const data = await response.json().catch(() => defaultSettings);
-        setSettings(data);
-        setInitialSettings(data);
-        return;
-      }
+      // 不再检查 response.ok，因为即使是 500 错误，我们也要尝试解析 body
+      // 以处理后端可能返回的错误信息
       const data = await response.json();
+      
+      if (!response.ok) {
+        // 如果响应状态不是 2xx，则抛出错误，错误信息来自后端
+        throw new Error(data.message || '加载设置失败。');
+      }
+
       setSettings(data);
       setInitialSettings(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      setSettings(defaultSettings); // Fallback to default on error
+      setSettings(defaultSettings); // 出错时回退到默认设置
       setInitialSettings(defaultSettings);
       toast({
         variant: 'destructive',
         title: '加载失败',
-        description: '无法加载应用设置。正在使用默认设置。',
+        description: `无法加载应用设置: ${error.message}。正在使用默认设置。`,
       });
     } finally {
       setLoading(false);
@@ -65,21 +64,28 @@ export function useSettings() {
   const handleSaveChanges = async () => {
     setSaving(true);
     try {
+      // 确保我们只发送纯净的设置数据
+      const payload: AppSettings = {
+        primary_color: settings.primary_color,
+        welcome_message: settings.welcome_message,
+        offline_message: settings.offline_message,
+        accept_new_chats: settings.accept_new_chats,
+      };
+
       const response = await fetch('/api/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(settings),
+        body: JSON.stringify(payload),
       });
 
+      const responseData = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || '保存失败');
+        throw new Error(responseData.message || '保存失败');
       }
       
-      const savedData = await response.json();
-
-      setSettings(savedData);
-      setInitialSettings(savedData);
+      setSettings(responseData);
+      setInitialSettings(responseData);
 
       toast({
         title: '设置已保存',

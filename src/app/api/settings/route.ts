@@ -4,8 +4,9 @@ import { sql } from '@/lib/db';
 export async function GET() {
   try {
     const result = await sql`SELECT * FROM app_settings WHERE id = 1`;
+    
+    // 如果没有找到设置，返回默认值，状态码为 200 OK
     if (result.length === 0) {
-      // Return default settings if none are found in the database.
       return NextResponse.json({
         primary_color: '#64B5F6',
         welcome_message: '您好！我们能为您做些什么？',
@@ -13,17 +14,14 @@ export async function GET() {
         accept_new_chats: true,
       });
     }
+
     return NextResponse.json(result[0]);
+
   } catch (error) {
     console.error('Failed to fetch settings:', error);
-    // Return default settings on error as a fallback, with a 200 OK status
-    // so the frontend can still render.
-    return NextResponse.json({
-        primary_color: '#64B5F6',
-        welcome_message: '您好！我们能为您做些什么？',
-        offline_message: '我们目前不在。请留言，我们会尽快回复您。',
-        accept_new_chats: true,
-      });
+    // 只有在数据库查询本身发生灾难性错误时，才返回500
+    // 但前端的 use-settings 钩子应该能处理这种情况
+    return NextResponse.json({ message: '内部服务器错误' }, { status: 500 });
   }
 }
 
@@ -32,7 +30,6 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { primary_color, welcome_message, offline_message, accept_new_chats } = body;
     
-    // Validate that all required fields are present
     if (primary_color === undefined || welcome_message === undefined || offline_message === undefined || accept_new_chats === undefined) {
       return NextResponse.json({ message: '缺少必需的设置字段。' }, { status: 400 });
     }
@@ -45,7 +42,7 @@ export async function POST(request: Request) {
         accept_new_chats
     };
 
-    // Use sql helper for safe upsert
+    // 使用最简单、最安全的 sql helper 语法进行 UPSERT
     const result = await sql`
         INSERT INTO app_settings ${sql(settingsData, 'id', 'primary_color', 'welcome_message', 'offline_message', 'accept_new_chats')}
         ON CONFLICT (id)
