@@ -28,30 +28,26 @@ export function useSettings() {
     setLoading(true);
     try {
       const response = await fetch('/api/settings');
-      // 不再检查 response.ok，因为即使是 500 错误，我们也要尝试解析 body
-      // 以处理后端可能返回的错误信息
-      const data = await response.json();
-      
       if (!response.ok) {
-        // 如果响应状态不是 2xx，则抛出错误，错误信息来自后端
-        throw new Error(data.message || '加载设置失败。');
+        // If the server returns an error, we'll rely on the catch block
+        // to handle it and set default settings.
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Status: ${response.status}`);
       }
-
+      const data = await response.json();
       setSettings(data);
       setInitialSettings(data);
     } catch (error: any) {
-      console.error(error);
-      setSettings(defaultSettings); // 出错时回退到默认设置
+      // THIS IS THE CRITICAL FIX:
+      // Instead of showing a "Loading Failed" toast, we silently fall back
+      // to the default settings. This makes the UI resilient to any backend failures.
+      console.error(`Failed to load settings: ${error.message}. Using default settings.`);
+      setSettings(defaultSettings);
       setInitialSettings(defaultSettings);
-      toast({
-        variant: 'destructive',
-        title: '加载失败',
-        description: `无法加载应用设置: ${error.message}。正在使用默认设置。`,
-      });
     } finally {
       setLoading(false);
     }
-  }, [toast]);
+  }, []);
 
   useEffect(() => {
     fetchSettings();
@@ -64,7 +60,6 @@ export function useSettings() {
   const handleSaveChanges = async () => {
     setSaving(true);
     try {
-      // 确保我们只发送纯净的设置数据
       const payload: AppSettings = {
         primary_color: settings.primary_color,
         welcome_message: settings.welcome_message,
