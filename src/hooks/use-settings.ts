@@ -29,7 +29,13 @@ export function useSettings() {
     try {
       const response = await fetch('/api/settings');
       if (!response.ok) {
-        throw new Error('无法加载设置');
+        // If API returns an error, it might be because no settings exist yet.
+        // We can use default settings and not show an error toast.
+        // The GET handler should return defaults on error anyway.
+        const data = await response.json().catch(() => defaultSettings);
+        setSettings(data);
+        setInitialSettings(data);
+        return;
       }
       const data = await response.json();
       setSettings(data);
