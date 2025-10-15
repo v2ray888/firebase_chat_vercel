@@ -1,19 +1,27 @@
 'use client';
 
 import { WidgetPreview } from '@/components/settings/widget-preview';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
-import { useSettings } from '@/hooks/use-settings';
 import { Skeleton } from '@/components/ui/skeleton';
+import type { AppSettings } from '@/hooks/use-settings';
 
-export default function SettingsGeneralPage() {
-  const { settings, loading, saving, updateSettings, handleSaveChanges } = useSettings();
-  const { toast } = useToast();
+interface SettingsGeneralPageProps {
+  settings?: AppSettings;
+  loading?: boolean;
+  saving?: boolean;
+  updateSettings?: (newValues: Partial<AppSettings>) => void;
+}
 
-  if (loading) {
+export default function SettingsGeneralPage({ 
+  settings, 
+  loading, 
+  saving, 
+  updateSettings 
+}: SettingsGeneralPageProps) {
+
+  if (loading || !settings || !updateSettings) {
     return (
       <div className="space-y-6">
         <Skeleton className="h-8 w-48" />
@@ -27,12 +35,6 @@ export default function SettingsGeneralPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-medium">通用</h3>
-        <p className="text-sm text-muted-foreground">
-          自定义您的聊天小部件的外观和感觉。
-        </p>
-      </div>
       <div className="grid md:grid-cols-2 gap-6 items-start">
         <Card>
           <CardHeader>
@@ -60,9 +62,6 @@ export default function SettingsGeneralPage() {
                 />
               </div>
             </div>
-            <Button onClick={() => handleSaveChanges()} disabled={saving}>
-              {saving ? '保存中...' : '保存更改'}
-            </Button>
           </CardContent>
         </Card>
         <Card>

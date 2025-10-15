@@ -5,12 +5,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
-import { useSettings } from '@/hooks/use-settings';
+import type { AppSettings } from '@/hooks/use-settings';
 
-export default function SettingsAvailabilityPage() {
-  const { settings, loading, saving, updateSettings, handleSaveChanges } = useSettings();
+interface SettingsAvailabilityPageProps {
+  settings?: AppSettings;
+  loading?: boolean;
+  saving?: boolean;
+  updateSettings?: (newValues: Partial<AppSettings>) => void;
+}
 
-  if (loading) {
+export default function SettingsAvailabilityPage({
+  settings,
+  loading,
+  saving,
+  updateSettings,
+}: SettingsAvailabilityPageProps) {
+  if (loading || !settings || !updateSettings) {
     return (
         <div className="space-y-6">
             <Skeleton className="h-8 w-48" />
@@ -22,15 +32,10 @@ export default function SettingsAvailabilityPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-medium">可用性</h3>
-        <p className="text-sm text-muted-foreground">
-          管理您的团队的在线和离线状态。
-        </p>
-      </div>
       <Card>
           <CardHeader>
               <CardTitle>代理可用性</CardTitle>
+              <CardDescription>管理您的团队的在线和离线状态。</CardDescription>
           </CardHeader>
           <CardContent className="space-y-8">
               <div className="flex items-center justify-between rounded-lg border p-4">
@@ -54,9 +59,6 @@ export default function SettingsAvailabilityPage() {
                       根据时间表自动设置您的可用性。此功能计划在将来的更新中推出。
                   </p>
               </div>
-               <Button onClick={handleSaveChanges} disabled={saving}>
-                  {saving ? '保存中...' : '保存可用性'}
-               </Button>
           </CardContent>
       </Card>
     </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
-interface AppSettings {
+export interface AppSettings {
   primary_color: string;
   welcome_message: string;
   offline_message: string;
@@ -20,6 +20,7 @@ const defaultSettings: AppSettings = {
 export function useSettings() {
   const { toast } = useToast();
   const [settings, setSettings] = useState<AppSettings>(defaultSettings);
+  const [initialSettings, setInitialSettings] = useState<AppSettings>(defaultSettings);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -32,9 +33,11 @@ export function useSettings() {
       }
       const data = await response.json();
       setSettings(data);
+      setInitialSettings(data);
     } catch (error) {
       console.error(error);
       setSettings(defaultSettings); // Fallback to default on error
+      setInitialSettings(defaultSettings);
       toast({
         variant: 'destructive',
         title: '加载失败',
@@ -66,6 +69,11 @@ export function useSettings() {
         const errorData = await response.json();
         throw new Error(errorData.message || '保存失败');
       }
+      
+      const savedData = await response.json();
+
+      setSettings(savedData);
+      setInitialSettings(savedData);
 
       toast({
         title: '设置已保存',
@@ -82,5 +90,7 @@ export function useSettings() {
     }
   };
 
-  return { settings, loading, saving, updateSettings, handleSaveChanges };
+  const hasChanges = JSON.stringify(settings) !== JSON.stringify(initialSettings);
+
+  return { settings, loading, saving, updateSettings, handleSaveChanges, hasChanges };
 }
