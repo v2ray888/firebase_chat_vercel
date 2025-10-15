@@ -29,23 +29,32 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const { primary_color, welcome_message, offline_message, accept_new_chats } = await request.json();
-
+    const body = await request.json();
+    const { primary_color, welcome_message, offline_message, accept_new_chats } = body;
+    
     // Validate that all required fields are present
     if (primary_color === undefined || welcome_message === undefined || offline_message === undefined || accept_new_chats === undefined) {
       return NextResponse.json({ message: '缺少必需的设置字段。' }, { status: 400 });
     }
 
+    const settingsData = {
+        id: 1,
+        primary_color,
+        welcome_message,
+        offline_message,
+        accept_new_chats
+    };
+
+    // Use sql helper for safe upsert
     const result = await sql`
-      INSERT INTO app_settings (id, primary_color, welcome_message, offline_message, accept_new_chats)
-      VALUES (1, ${primary_color}, ${welcome_message}, ${offline_message}, ${accept_new_chats})
-      ON CONFLICT (id) 
-      DO UPDATE SET 
-        primary_color = EXCLUDED.primary_color, 
-        welcome_message = EXCLUDED.welcome_message,
-        offline_message = EXCLUDED.offline_message,
-        accept_new_chats = EXCLUDED.accept_new_chats
-      RETURNING *;
+        INSERT INTO app_settings ${sql(settingsData, 'id', 'primary_color', 'welcome_message', 'offline_message', 'accept_new_chats')}
+        ON CONFLICT (id)
+        DO UPDATE SET
+            primary_color = EXCLUDED.primary_color,
+            welcome_message = EXCLUDED.welcome_message,
+            offline_message = EXCLUDED.offline_message,
+            accept_new_chats = EXCLUDED.accept_new_chats
+        RETURNING *
     `;
     
     return NextResponse.json(result[0], { status: 200 });
