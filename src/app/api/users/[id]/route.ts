@@ -11,7 +11,7 @@ type RouteParams = {
 export async function GET(request: Request, { params }: RouteParams) {
   const { id } = params;
   try {
-    const result = await sql`SELECT id, name, email, avatar, role, status, created_at FROM users WHERE id = ${id}`;
+    const result = await sql`SELECT id, name, email, avatar, role, status, created_at, updated_at FROM users WHERE id = ${id}`;
     if (result.length === 0) {
       return NextResponse.json({ message: '未找到用户。' }, { status: 404 });
     }

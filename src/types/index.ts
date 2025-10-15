@@ -6,8 +6,8 @@ export type User = {
   role: 'agent' | 'admin';
   status: 'online' | 'offline';
   password?: string;
-  createdAt?: string;
-  updatedAt?: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type Customer = {
@@ -15,8 +15,8 @@ export type Customer = {
   name: string;
   email: string;
   avatar: string;
-  createdAt?: string;
-  updatedAt?: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type Message = {
@@ -53,3 +53,13 @@ export type Website = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type AppSettings = {
+  id: number;
+  primary_color: string;
+  welcome_message: string;
+  offline_message: string;
+  accept_new_chats: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
