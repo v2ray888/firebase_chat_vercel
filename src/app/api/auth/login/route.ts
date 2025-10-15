@@ -11,12 +11,13 @@ export async function POST(request: Request) {
     }
 
     // 查找用户
-    const result = await sql`SELECT * FROM users WHERE email = ${email}`;
-    const user = result[0];
-
-    if (!user) {
+    const users = await sql`SELECT * FROM users WHERE email = ${email}`;
+    
+    if (users.length === 0) {
       return NextResponse.json({ message: '无效的电子邮件或密码。' }, { status: 401 });
     }
+    
+    const user = users[0];
 
     // 比较密码
     const isPasswordValid = await bcrypt.compare(password, user.password);

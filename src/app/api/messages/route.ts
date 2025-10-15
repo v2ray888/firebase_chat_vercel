@@ -10,7 +10,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: '缺少必需字段。' }, { status: 400 });
     }
 
-    const timestamp = new Date().toISOString();
+    const timestamp = new Date();
 
     const result = await sql`
       INSERT INTO messages (case_id, sender_type, content, "timestamp", user_id, customer_id)

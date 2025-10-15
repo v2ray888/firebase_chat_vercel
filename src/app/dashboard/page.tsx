@@ -42,9 +42,15 @@ export default function DashboardPage() {
       await fetchConversations();
 
       try {
-        const agentResponse = await fetch('/api/users').then(res => res.json().then(users => users.find((u: User) => u.email === 'alex.doe@example.com')))
-        if (agentResponse) {
-          setAgent(agentResponse);
+        const usersResponse = await fetch('/api/users');
+        if (!usersResponse.ok) {
+          throw new Error('Failed to fetch users');
+        }
+        const users = await usersResponse.json();
+        const agentUser = users.find((u: User) => u.email === 'alex.doe@example.com');
+
+        if (agentUser) {
+          setAgent(agentUser);
         } else {
            const mockAgent: User = { id: '72890a1a-4530-4355-8854-82531580e0a5', name: 'Alex Doe', email: 'alex.doe@example.com', avatar: 'https://picsum.photos/seed/1/40/40', role: 'agent', status: 'online' };
            setAgent(mockAgent);
@@ -66,7 +72,7 @@ export default function DashboardPage() {
     setSelectedConvId(conversationId);
   };
 
-  const handleSendMessage = async (message: Omit<Message, 'id' | 'timestamp' | 'case_id'>) => {
+  const handleSendMessage = async (message: Omit<Message, 'id' | 'timestamp' | 'caseId'>) => {
     if (!selectedConvId || !agent) return;
 
     const tempId = `msg-${Date.now()}`;
@@ -74,8 +80,8 @@ export default function DashboardPage() {
       ...message,
       id: tempId,
       timestamp: new Date().toISOString(),
-      case_id: selectedConvId,
-      user_id: agent.id,
+      caseId: selectedConvId,
+      userId: agent.id,
     };
     
     // Optimistic update
@@ -165,9 +171,9 @@ export default function DashboardPage() {
   const handleSuggestionClick = (suggestion: string) => {
     if (!agent) return;
     handleSendMessage({
-        sender_type: 'agent',
+        senderType: 'agent',
         content: suggestion,
-        user_id: agent.id,
+        userId: agent.id,
     });
   };
 
@@ -193,5 +199,3 @@ export default function DashboardPage() {
       />
   );
 }
-
-    

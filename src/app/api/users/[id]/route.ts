@@ -34,15 +34,16 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       
       const { name, email, role, status, password } = body;
 
-      const updates: any = {};
+      const updates: Record<string, any> = {};
       if (name) updates.name = name;
       if (email) updates.email = email;
       if (role) updates.role = role;
       if (status) updates.status = status;
       if (password) updates.password = await bcrypt.hash(password, 10);
+      updates.updated_at = new Date();
 
       const keys = Object.keys(updates);
-      if (keys.length === 0) {
+      if (keys.length <= 1) { // only updated_at
           return NextResponse.json({ message: '没有提供要更新的字段。' }, { status: 400 });
       }
 

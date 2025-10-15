@@ -21,7 +21,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         
         const result = await sql`
             UPDATE cases 
-            SET status = ${status}, updated_at = ${new Date().toISOString()} 
+            SET status = ${status}, updated_at = ${new Date()} 
             WHERE id = ${id} 
             RETURNING *
         `;

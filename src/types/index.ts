@@ -6,8 +6,8 @@ export type User = {
   role: 'agent' | 'admin';
   status: 'online' | 'offline';
   password?: string;
-  created_at?: string;
-  updated_at?: string;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export type Customer = {
@@ -15,27 +15,27 @@ export type Customer = {
   name: string;
   email: string;
   avatar: string;
-  created_at?: string;
-  updated_at?: string;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export type Message = {
   id: string;
-  case_id: string;
-  sender_type: 'user' | 'agent' | 'system';
+  caseId: string;
+  senderType: 'user' | 'agent' | 'system';
   content: string;
   timestamp: string;
-  user_id?: string; // agent's id
-  customer_id?: string;
+  userId?: string; // agent's id
+  customerId?: string;
 };
 
 export type Case = {
   id: string;
-  customer_id: string;
+  customerId: string;
   status: 'open' | 'in-progress' | 'resolved';
   summary: string;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type Conversation = {
@@ -49,7 +49,7 @@ export type Website = {
   id: string;
   name: string;
   url: string;
-  user_id: string;
-  created_at: string;
-  updated_at: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
 };

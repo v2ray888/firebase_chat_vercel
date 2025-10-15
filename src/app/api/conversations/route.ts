@@ -4,7 +4,6 @@ import type { Conversation, Case, Customer, Message } from '@/types';
 
 export async function GET() {
   try {
-    // This query is complex. It groups messages by case and then constructs the conversation object.
     const rows = await sql`
         SELECT
             c.id as case_id,
@@ -16,45 +15,45 @@ export async function GET() {
             cust.name as customer_name,
             cust.email as customer_email,
             cust.avatar as customer_avatar,
-            json_agg(
-                json_build_object(
-                    'id', m.id,
-                    'case_id', m.case_id,
-                    'sender_type', m.sender_type,
-                    'content', m.content,
-                    'timestamp', m.timestamp,
-                    'user_id', m.user_id,
-                    'customer_id', m.customer_id
-                ) ORDER BY m.timestamp
+            (
+                SELECT json_agg(m.* ORDER BY m.timestamp)
+                FROM messages m
+                WHERE m.case_id = c.id
             ) as messages
         FROM cases c
         JOIN customers cust ON c.customer_id = cust.id
-        LEFT JOIN messages m ON c.id = m.case_id
-        GROUP BY c.id, cust.id
-        ORDER BY MAX(m.timestamp) DESC;
+        ORDER BY c.updated_at DESC;
     `;
 
     const conversations: Conversation[] = rows.map((row: any) => {
         const customer: Customer = {
-            id: row.customer_id,
-            name: row.customer_name,
-            email: row.customer_email,
-            avatar: row.customer_avatar,
+            id: row.customerId,
+            name: row.customerName,
+            email: row.customerEmail,
+            avatar: row.customerAvatar,
         };
 
         const caseInfo: Case = {
-            id: row.case_id,
-            customer_id: row.customer_id,
-            status: row.case_status,
-            summary: row.case_summary,
-            created_at: row.case_created_at,
-            updated_at: row.case_updated_at,
+            id: row.caseId,
+            customerId: row.customerId,
+            status: row.caseStatus,
+            summary: row.caseSummary,
+            createdAt: row.caseCreatedAt,
+            updatedAt: row.caseUpdatedAt,
         };
 
-        const messages: Message[] = row.messages.filter((m: any) => m.id !== null) || [];
+        const messages: Message[] = (row.messages || []).map((m: any) => ({
+            id: m.id,
+            caseId: m.case_id,
+            senderType: m.sender_type,
+            content: m.content,
+            timestamp: m.timestamp,
+            userId: m.user_id,
+            customerId: m.customer_id
+        }));
 
         return {
-            id: row.case_id,
+            id: row.caseId,
             customer,
             case: caseInfo,
             messages,

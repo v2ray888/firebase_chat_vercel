@@ -10,7 +10,7 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "db:setup": "node -e \"require('dotenv').config(); const { Pool } = require('pg'); const fs = require('fs'); const sql = fs.readFileSync('src/lib/schema.sql').toString(); const pool = new Pool({ connectionString: process.env.POSTGRES_URL }); pool.query(sql).then(() => console.log('Database setup complete.')).catch(err => console.error('Database setup failed:', err)).finally(() => pool.end());\"",
+    "db:setup": "node -e \"require('dotenv').config(); const postgres = require('postgres'); const fs = require('fs'); const sqlContent = fs.readFileSync('src/lib/schema.sql').toString(); const dbUrl = process.env.POSTGRES_URL; if (!dbUrl) { throw new Error('POSTGRES_URL is not set'); } const sql = postgres(dbUrl); sql.unsafe(sqlContent).then(() => console.log('Database setup complete.')).catch(err => console.error('Database setup failed:', err)).finally(() => sql.end());\"",
     "db:seed": "node --import tsx src/lib/seed.ts"
   },
   "dependencies": {
@@ -66,7 +66,6 @@
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
-    "@types/pg": "^8.11.6",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "genkit-cli": "^1.20.0",

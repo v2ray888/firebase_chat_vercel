@@ -19,7 +19,7 @@ interface ChatLayoutProps {
   agent: User;
   isRightPanelOpen: boolean;
   onSelectConversation: (conversationId: string) => void;
-  onSendMessage: (message: Omit<Message, 'id' | 'timestamp' | 'case_id'>) => void;
+  onSendMessage: (message: Omit<Message, 'id' | 'timestamp' | 'caseId'>) => void;
   onUpdateStatus: (status: 'open' | 'in-progress' | 'resolved') => void;
   onSuggestionClick: (suggestion: string) => void;
   toggleRightPanel: () => void;
@@ -36,7 +36,7 @@ export function ChatLayout({
   onSuggestionClick,
   toggleRightPanel,
 }: ChatLayoutProps) {
-  const lastCustomerMessage = selectedConversation?.messages.filter(m => m.sender_type === 'user').slice(-1)[0];
+  const lastCustomerMessage = selectedConversation?.messages.filter(m => m.senderType === 'user').slice(-1)[0];
 
   const handleSelect = (conversation: Conversation) => {
     onSelectConversation(conversation.id);
@@ -94,7 +94,7 @@ export function ChatLayout({
                   <AiSuggestions
                     customerQuery={lastCustomerMessage?.content || ''}
                     chatHistory={selectedConversation.messages
-                      .map(m => `${m.sender_type}: ${m.content}`)
+                      .map(m => `${m.senderType}: ${m.content}`)
                       .join('\n')}
                     onSuggestionClick={onSuggestionClick}
                   />

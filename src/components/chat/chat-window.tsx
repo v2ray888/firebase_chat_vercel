@@ -13,7 +13,7 @@ import { Card, CardHeader, CardTitle, CardDescription } from '../ui/card';
 
 interface ChatWindowProps {
   conversation: Conversation;
-  onSendMessage: (message: Omit<Message, 'id' | 'timestamp' | 'case_id' | 'customer_id' >) => void;
+  onSendMessage: (message: Omit<Message, 'id' | 'timestamp' | 'caseId' | 'customerId' >) => void;
   agentAvatar: string;
   isRightPanelOpen: boolean;
   toggleRightPanel: () => void;
@@ -36,9 +36,9 @@ export function ChatWindow({ conversation, onSendMessage, agentAvatar, isRightPa
     e.preventDefault();
     if (newMessage.trim()) {
       onSendMessage({
-        sender_type: 'agent',
+        senderType: 'agent',
         content: newMessage,
-        user_id: 'user-1', // This should come from logged in user session
+        userId: 'user-1', // This should come from logged in user session
       });
       setNewMessage('');
     }
@@ -69,10 +69,10 @@ export function ChatWindow({ conversation, onSendMessage, agentAvatar, isRightPa
               key={index}
               className={cn(
                 'flex items-start gap-3 animate-in fade-in-0 slide-in-from-bottom-2 duration-300',
-                message.sender_type === 'agent' ? 'justify-end' : 'justify-start'
+                message.senderType === 'agent' ? 'justify-end' : 'justify-start'
               )}
             >
-              {message.sender_type === 'user' && (
+              {message.senderType === 'user' && (
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={conversation.customer.avatar} />
                   <AvatarFallback>{conversation.customer.name.charAt(0)}</AvatarFallback>
@@ -81,21 +81,21 @@ export function ChatWindow({ conversation, onSendMessage, agentAvatar, isRightPa
               <div
                 className={cn(
                   'max-w-xs md:max-w-md lg:max-w-lg rounded-lg px-4 py-2',
-                  message.sender_type === 'agent' ? 'bg-primary text-primary-foreground' : 'bg-card border',
-                  message.sender_type === 'system' && 'w-full bg-transparent border-none text-center text-xs text-muted-foreground'
+                  message.senderType === 'agent' ? 'bg-primary text-primary-foreground' : 'bg-card border',
+                  message.senderType === 'system' && 'w-full bg-transparent border-none text-center text-xs text-muted-foreground'
                 )}
               >
                 <p className="text-sm">{message.content}</p>
-                 {message.sender_type !== 'system' && (
+                 {message.senderType !== 'system' && (
                   <p className={cn(
                       'text-xs mt-1',
-                      message.sender_type === 'agent' ? 'text-primary-foreground/70' : 'text-muted-foreground'
+                      message.senderType === 'agent' ? 'text-primary-foreground/70' : 'text-muted-foreground'
                     )}>
                     {format(new Date(message.timestamp), 'p')}
                   </p>
                 )}
               </div>
-              {message.sender_type === 'agent' && (
+              {message.senderType === 'agent' && (
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={agentAvatar} />
                   <AvatarFallback>A</AvatarFallback>

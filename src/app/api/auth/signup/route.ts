@@ -21,13 +21,13 @@ export async function POST(request: Request) {
 
     // 将用户插入数据库
     const defaultAvatar = `https://picsum.photos/seed/${encodeURIComponent(email)}/40/40`;
-    const newUser = await sql`
+    const newUsers = await sql`
       INSERT INTO users (name, email, "password", avatar, "role", status) 
       VALUES (${name}, ${email}, ${hashedPassword}, ${defaultAvatar}, 'agent', 'offline') 
       RETURNING id, name, email, "role"
     `;
 
-    return NextResponse.json({ user: newUser[0] }, { status: 201 });
+    return NextResponse.json({ user: newUsers[0] }, { status: 201 });
   } catch (error) {
     console.error('注册错误:', error);
     return NextResponse.json({ message: '内部服务器错误' }, { status: 500 });

@@ -9,8 +9,9 @@ const pg_url = process.env.POSTGRES_URL;
 
 // Use the neon serverless driver in production
 // Use the standard postgres driver in development
+// The 'postgres' package is smart enough to handle the connection string format
 const sql = process.env.NODE_ENV === 'production' 
-  ? postgres({ ssl: 'require', ...neon(pg_url) }) 
-  : postgres(pg_url);
+  ? postgres(pg_url, { ssl: 'require', transform: postgres.camel, ...neon(pg_url) }) 
+  : postgres(pg_url, { transform: postgres.camel });
 
 export { sql };

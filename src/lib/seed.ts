@@ -8,10 +8,10 @@ async function seed() {
 
     // Start a transaction
     await sql.begin(async (sql) => {
-        // Clear existing data from dependent tables first
-        await sql`TRUNCATE users, customers, cases, messages, websites RESTART IDENTITY CASCADE`;
-        // Clear settings table separately and safely
-        await sql`DELETE FROM app_settings`;
+        await sql.unsafe(`
+            TRUNCATE TABLE users, customers, cases, messages, websites RESTART IDENTITY CASCADE;
+            DELETE FROM app_settings;
+        `);
         console.log('Cleared existing data.');
 
         // Seed Users
@@ -26,9 +26,12 @@ async function seed() {
             const hashedPassword = await bcrypt.hash(user.password, 10);
             return { ...user, password: hashedPassword };
         }));
-
+        
+        // postgres.js doesn't transform column names in array insertions, so we must use snake_case
+        const hashedUsersSnakeCase = hashedUsers.map(u => ({ ...u, created_at: new Date(), updated_at: new Date() }))
+        
         const userInserts = await sql`
-            INSERT INTO users ${sql(hashedUsers, 'name', 'email', 'password', 'role', 'status', 'avatar')}
+            INSERT INTO users ${sql(hashedUsersSnakeCase, 'name', 'email', 'password', 'role', 'status', 'avatar', 'created_at', 'updated_at')}
             RETURNING id, email`;
         const userIds = userInserts.map(u => u.id);
         const alexDoeUser = userInserts.find(u => u.email === 'alex.doe@example.com');
@@ -43,8 +46,10 @@ async function seed() {
           { name: 'Taylor Miller', email: 'taylor.miller@example.com', avatar: 'https://picsum.photos/seed/104/40/40' },
         ];
         
+        const customersSnakeCase = customers.map(c => ({...c, created_at: new Date(), updated_at: new Date()}))
+
         const customerInserts = await sql`
-            INSERT INTO customers ${sql(customers, 'name', 'email', 'avatar')}
+            INSERT INTO customers ${sql(customersSnakeCase, 'name', 'email', 'avatar', 'created_at', 'updated_at')}
             RETURNING id`;
         const customerIds = customerInserts.map(c => c.id);
         console.log(`Seeded ${customerIds.length} customers.`);
@@ -73,8 +78,8 @@ async function seed() {
         
         for (const caseItem of casesData) {
             const caseResult = await sql`
-                INSERT INTO cases (customer_id, status, summary) 
-                VALUES (${customerIds[caseItem.customerIndex]}, ${caseItem.status}, ${caseItem.summary}) 
+                INSERT INTO cases (customer_id, status, summary, created_at, updated_at) 
+                VALUES (${customerIds[caseItem.customerIndex]}, ${caseItem.status}, ${caseItem.summary}, ${new Date()}, ${new Date()}) 
                 RETURNING id`;
             const caseId = caseResult[0].id;
             
@@ -94,10 +99,16 @@ async function seed() {
         console.log(`Seeded ${casesData.length} cases with messages.`);
 
         // Seed App Settings
+        const settingsData = {
+          id: 1,
+          primary_color: '#64B5F6',
+          welcome_message: '您好！我们能为您做些什么？',
+          offline_message: '我们目前不在。请留言，我们会尽快回复您。',
+          accept_new_chats: true
+        };
         await sql`
-            INSERT INTO app_settings (id, primary_color, welcome_message, offline_message, accept_new_chats)
-             VALUES (1, '#64B5F6', '您好！我们能为您做些什么？', '我们目前不在。请留言，我们会尽快回复您。', true)
-             ON CONFLICT (id) DO UPDATE SET
+            INSERT INTO app_settings ${sql(settingsData)}
+            ON CONFLICT (id) DO UPDATE SET
                 primary_color = EXCLUDED.primary_color,
                 welcome_message = EXCLUDED.welcome_message,
                 offline_message = EXCLUDED.offline_message,
@@ -108,8 +119,8 @@ async function seed() {
         // Seed Websites
         if (alexDoeUser) {
             await sql`
-                INSERT INTO websites (name, url, user_id)
-                VALUES ('霓虹示例网站', 'https://example.com', ${alexDoeUser.id})
+                INSERT INTO websites (name, url, user_id, created_at, updated_at)
+                VALUES ('霓虹示例网站', 'https://example.com', ${alexDoeUser.id}, ${new Date()}, ${new Date()})
             `;
             console.log('Seeded websites.');
         }
