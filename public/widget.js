@@ -14,9 +14,15 @@
     return;
   }
 
+  // 获取脚本标签上的data-base-url属性，如果没有则使用当前脚本的源
+  const baseUrl = scriptTag ? scriptTag.getAttribute('data-base-url') : null;
+  const widgetSrc = baseUrl 
+    ? `${baseUrl}/widget/${widgetId}`
+    : `${window.location.protocol}//${window.location.host}/widget/${widgetId}`;
+
   // 创建 iframe 来承载聊天小部件
   const iframe = document.createElement('iframe');
-  iframe.src = `${window.location.protocol}//${window.location.host}/widget/${widgetId}`;
+  iframe.src = widgetSrc;
   iframe.style.cssText = `
     position: fixed;
     bottom: 20px;

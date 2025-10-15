@@ -46,3 +46,33 @@ This will create a `.next` folder with the production-ready build of your applic
 ## Deployment
 
 This application is ready to be deployed to a variety of platforms that support Node.js applications.
+
+## Using the Chat Widget
+
+To integrate the chat widget into your website, add the following code snippet to your HTML file just before the closing `</body>` tag:
+
+```html
+<div id="neonsupport-widget-container"></div>
+<script 
+  src="YOUR_DEPLOYED_URL/widget.js" 
+  data-widget-id="57f13bb3-7819-45db-9961-bce85b83f3d2" 
+  data-base-url="YOUR_DEPLOYED_URL"
+  defer>
+</script>
+```
+
+Replace `YOUR_DEPLOYED_URL` with the actual URL where your application is deployed (e.g., your Vercel URL).
+
+For example, if your Vercel deployment URL is `https://your-app.vercel.app`, the code would be:
+
+```html
+<div id="neonsupport-widget-container"></div>
+<script 
+  src="https://your-app.vercel.app/widget.js" 
+  data-widget-id="57f13bb3-7819-45db-9961-bce85b83f3d2" 
+  data-base-url="https://your-app.vercel.app"
+  defer>
+</script>
+```
+
+The `data-base-url` attribute is important for ensuring the widget works correctly in production environments.
