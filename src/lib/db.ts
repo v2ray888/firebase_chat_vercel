@@ -7,9 +7,9 @@ if (!process.env.POSTGRES_URL) {
 
 const pg_url = process.env.POSTGRES_URL;
 
-// Use the neon serverless driver in production
-// Use the standard postgres driver in development
-// The 'postgres' package is smart enough to handle the connection string format
+// Use the neon serverless driver in production, postgres driver in development.
+// The `postgres` package is smart enough to handle the connection string format.
+// `transform: postgres.camel` automatically transforms snake_case columns to camelCase properties.
 const sql = process.env.NODE_ENV === 'production' 
   ? postgres(pg_url, { ssl: 'require', transform: postgres.camel, ...neon(pg_url) }) 
   : postgres(pg_url, { transform: postgres.camel });

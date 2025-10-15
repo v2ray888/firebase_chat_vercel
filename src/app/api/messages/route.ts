@@ -4,23 +4,33 @@ import { revalidatePath } from 'next/cache';
 
 export async function POST(request: Request) {
   try {
-    const { case_id, sender_type, content, user_id, customer_id } = await request.json();
+    const { caseId, senderType, content, userId, customerId } = await request.json();
 
-    if (!case_id || !sender_type || !content) {
+    if (!caseId || !senderType || !content) {
       return NextResponse.json({ message: '缺少必需字段。' }, { status: 400 });
     }
 
     const timestamp = new Date();
 
+    // The sql template tag automatically handles mapping camelCase (e.g., caseId)
+    // to snake_case (e.g., case_id) for insertion.
+    const messageData = {
+      caseId,
+      senderType,
+      content,
+      timestamp,
+      userId: userId || null,
+      customerId: customerId || null
+    };
+
     const result = await sql`
-      INSERT INTO messages (case_id, sender_type, content, "timestamp", user_id, customer_id)
-       VALUES (${case_id}, ${sender_type}, ${content}, ${timestamp}, ${user_id || null}, ${customer_id || null})
-       RETURNING *
+      INSERT INTO messages ${sql(messageData)}
+      RETURNING *
     `;
 
     // Also update the case's updated_at timestamp
     await sql`
-        UPDATE cases SET updated_at = ${timestamp} WHERE id = ${case_id}
+        UPDATE cases SET updated_at = ${timestamp} WHERE id = ${caseId}
     `;
 
     // This helps in re-fetching the conversation list to show the latest message on top
