@@ -14,12 +14,14 @@ async function seed() {
         `);
         console.log('Cleared existing data from tables.');
 
+        const fixedAlexDoeId = '72890a1a-4530-4355-8854-82531580e0a5';
+
         // Seed Users
         const users = [
-          { name: 'Alex Doe', email: 'alex.doe@example.com', password: 'password123', role: 'agent', status: 'online', avatar: 'https://picsum.photos/seed/1/40/40' },
-          { name: 'Sam Smith', email: 'sam.smith@example.com', password: 'password123', role: 'agent', status: 'offline', avatar: 'https://picsum.photos/seed/2/40/40' },
-          { name: 'Jordan Lee', email: 'jordan.lee@example.com', password: 'password123', role: 'admin', status: 'online', avatar: 'https://picsum.photos/seed/3/40/40' },
-          { name: 'Casey Brown', email: 'casey.brown@example.com', password: 'password123', role: 'agent', status: 'online', avatar: 'https://picsum.photos/seed/4/40/40' },
+          { id: fixedAlexDoeId, name: 'Alex Doe', email: 'alex.doe@example.com', password: 'password123', role: 'agent', status: 'online', avatar: 'https://picsum.photos/seed/1/40/40' },
+          { id: '3958dc9e-712f-4377-85e9-fec4b6a6442a', name: 'Sam Smith', email: 'sam.smith@example.com', password: 'password123', role: 'agent', status: 'offline', avatar: 'https://picsum.photos/seed/2/40/40' },
+          { id: '3958dc9e-742f-4377-85e9-fec4b6a6442a', name: 'Jordan Lee', email: 'jordan.lee@example.com', password: 'password123', role: 'admin', status: 'online', avatar: 'https://picsum.photos/seed/3/40/40' },
+          { id: '3958dc9e-737f-4377-85e9-fec4b6a6442a', name: 'Casey Brown', email: 'casey.brown@example.com', password: 'password123', role: 'agent', status: 'online', avatar: 'https://picsum.photos/seed/4/40/40' },
         ];
 
         const hashedUsers = await Promise.all(users.map(async (user) => {
@@ -28,12 +30,14 @@ async function seed() {
         }));
         
         const userInserts = await sql`
-            INSERT INTO users ${sql(hashedUsers, 'name', 'email', 'password', 'role', 'status', 'avatar', 'created_at', 'updated_at')}
+            INSERT INTO users ${sql(hashedUsers, 'id', 'name', 'email', 'password', 'role', 'status', 'avatar', 'created_at', 'updated_at')}
             RETURNING id, email`;
+
         const userIdsByEmail = userInserts.reduce((acc, user) => {
           acc[user.email] = user.id;
           return acc;
         }, {} as Record<string, string>);
+        
         const alexDoeUserId = userIdsByEmail['alex.doe@example.com'];
         const samSmithUserId = userIdsByEmail['sam.smith@example.com'];
         console.log(`Seeded ${userInserts.length} users.`);
