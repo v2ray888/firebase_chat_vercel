@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Test Quick Replies API</title>
+    <title>Test Settings API</title>
 </head>
 <body>
-    <h1>Test Quick Replies API</h1>
-    <button onclick="fetchQuickReplies()">Fetch Quick Replies</button>
+    <h1>Test Settings API</h1>
+    <button onclick="fetchSettings()">Fetch Settings</button>
     <div id="result"></div>
 
     <script>
-        async function fetchQuickReplies() {
+        async function fetchSettings() {
             try {
-                const response = await fetch('/api/quick-replies');
+                const response = await fetch('http://localhost:9002/api/settings');
                 const data = await response.json();
                 document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
             } catch (error) {

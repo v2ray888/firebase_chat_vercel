@@ -30,7 +30,7 @@ function WidgetClient({ website, settings, widgetId }: {
     // 添加欢迎消息
     setMessages([{
       id: 'welcome',
-      content: settings.welcome_message,
+      content: settings.welcomeMessage, // 修复字段名
       sender: 'system',
       timestamp: new Date().toISOString()
     }]);
@@ -61,7 +61,7 @@ function WidgetClient({ website, settings, widgetId }: {
       // 如果有选择的图片，先上传
       if (selectedImage) {
         // 检查是否启用了图片上传功能
-        if (!settings?.enable_image_upload) {
+        if (!settings?.enableImageUpload) { // 修复字段名
           alert('图片上传功能已被管理员禁用');
           return;
         }
@@ -106,7 +106,7 @@ function WidgetClient({ website, settings, widgetId }: {
   // 处理图片选择
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     // 检查是否启用了图片上传功能
-    if (!settings?.enable_image_upload) {
+    if (!settings?.enableImageUpload) { // 修复字段名
       alert('图片上传功能已被管理员禁用');
       return;
     }
@@ -162,7 +162,7 @@ function WidgetClient({ website, settings, widgetId }: {
       <div className="h-full w-full flex items-center justify-center bg-white">
         <div 
           className="rounded-full w-16 h-16 flex items-center justify-center cursor-pointer shadow-lg"
-          style={{ backgroundColor: settings.primary_color }}
+          style={{ backgroundColor: settings.primaryColor }} // 修复字段名
           onClick={handleStartChat}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -178,11 +178,11 @@ function WidgetClient({ website, settings, widgetId }: {
       {/* 头部 */}
       <div 
         className="p-4 text-white rounded-t-lg flex justify-between items-center"
-        style={{ backgroundColor: settings.primary_color }}
+        style={{ backgroundColor: settings.primaryColor }} // 修复字段名
       >
         <div>
-          <h3 className="font-bold">客服支持</h3>
-          <p className="text-xs opacity-90">在线</p>
+          <h3 className="font-bold">{settings.widgetTitle || '客服支持'}</h3> {/* 使用设置中的标题 */}
+          <p className="text-xs opacity-90">{settings.widgetSubtitle || '在线'}</p> {/* 使用设置中的副标题 */}
         </div>
         <button 
           onClick={() => setIsChatOpen(false)}
@@ -206,7 +206,7 @@ function WidgetClient({ website, settings, widgetId }: {
               <div className="mr-2 mt-1">
                 <Avatar className="h-8 w-8">
                   <AvatarImage 
-                    src="https://picsum.photos/seed/customer-preview/40/40" 
+                    src={`https://picsum.photos/seed/customer-${message.id}/40/40`} 
                     alt="客户头像" 
                   />
                   <AvatarFallback className="bg-blue-500 text-white text-xs">
@@ -251,7 +251,7 @@ function WidgetClient({ website, settings, widgetId }: {
               <div className="ml-2 mt-1">
                 <Avatar className="h-8 w-8">
                   <AvatarImage 
-                    src="https://picsum.photos/seed/agent-preview/40/40" 
+                    src={`https://picsum.photos/seed/agent-${message.id}/40/40`} 
                     alt="客服头像" 
                   />
                   <AvatarFallback className="bg-purple-500 text-white text-xs">
@@ -293,7 +293,7 @@ function WidgetClient({ website, settings, widgetId }: {
           />
           <div className="flex space-x-1">
             {/* 只有在启用图片上传功能时才显示图片上传按钮 */}
-            {settings?.enable_image_upload && (
+            {settings?.enableImageUpload && ( // 修复字段名
               <input
                 type="file"
                 ref={fileInputRef}
@@ -302,7 +302,7 @@ function WidgetClient({ website, settings, widgetId }: {
                 onChange={handleImageSelect}
               />
             )}
-            {settings?.enable_image_upload && (
+            {settings?.enableImageUpload && ( // 修复字段名
               <button
                 type="button"
                 className="bg-gray-200 text-gray-700 rounded-full p-2 hover:bg-gray-300"
@@ -356,25 +356,40 @@ function WidgetClient({ website, settings, widgetId }: {
 
 // 服务器组件
 export default async function WidgetPage({ params }: { params: { id: string } }) {
-  // 获取应用设置
-  const settingsResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/settings`, {
-    next: { revalidate: 60 } // 60秒重新验证缓存
-  });
-  
-  if (!settingsResponse.ok) {
-    console.error('Failed to fetch settings:', settingsResponse.status, settingsResponse.statusText);
+  try {
+    // 获取应用设置
+    const settingsResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:9002'}/api/settings`, {
+      next: { revalidate: 60 } // 60秒重新验证缓存
+    });
+    
+    let settings;
+    if (!settingsResponse.ok) {
+      console.error('Failed to fetch settings:', settingsResponse.status, settingsResponse.statusText);
+      // 返回默认设置
+      settings = {
+        primaryColor: '#64B5F6',
+        welcomeMessage: '您好！我们能为您做些什么？',
+        widgetTitle: '客服支持',
+        widgetSubtitle: '我们通常在几分钟内回复',
+        enableImageUpload: true
+      };
+    } else {
+      settings = await settingsResponse.json();
+    }
+    
+    // 返回客户端组件
+    return <WidgetClient website={null} settings={settings} widgetId={params.id} />;
+  } catch (error) {
+    console.error('Error in WidgetPage:', error);
     // 返回默认设置
     const defaultSettings = {
-      primary_color: '#64B5F6',
-      welcome_message: '您好！我们能为您做些什么？',
-      enable_image_upload: true
+      primaryColor: '#64B5F6',
+      welcomeMessage: '您好！我们能为您做些什么？',
+      widgetTitle: '客服支持',
+      widgetSubtitle: '我们通常在几分钟内回复',
+      enableImageUpload: true
     };
     
     return <WidgetClient website={null} settings={defaultSettings} widgetId={params.id} />;
   }
-  
-  const settings = await settingsResponse.json();
-  
-  // 返回客户端组件
-  return <WidgetClient website={null} settings={settings} widgetId={params.id} />;
 }
