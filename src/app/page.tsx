@@ -1,5 +1,10 @@
 import MarketingPage from './(marketing)/page';
+import MarketingLayout from './(marketing)/layout';
 
 export default function Home() {
-  return <MarketingPage />;
+  return (
+    <MarketingLayout>
+      <MarketingPage />
+    </MarketingLayout>
+  );
 }
