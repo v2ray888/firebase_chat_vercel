@@ -27,9 +27,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: '网站名称和URL是必需的。' }, { status: 400 });
     }
 
+    const websiteData = {
+        name,
+        url,
+        user_id: MOCK_USER_ID
+    };
+
     const newWebsite = await sql`
-      INSERT INTO websites (name, url, user_id) 
-      VALUES (${name}, ${url}, ${MOCK_USER_ID})
+      INSERT INTO websites ${sql(websiteData, 'name', 'url', 'user_id')}
       RETURNING *
     `;
     
