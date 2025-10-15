@@ -10,8 +10,9 @@ async function seed() {
     await sql.begin(async (sql) => {
         // Clear existing data from dependent tables first
         console.log('Clearing existing data...');
+        // The schema.sql now handles dropping tables, so TRUNCATE is safer here
         await sql.unsafe(`
-            TRUNCATE TABLE messages, cases, websites, customers, users, app_settings RESTART IDENTITY CASCADE;
+            TRUNCATE TABLE "messages", "cases", "websites", "customers", "users", "app_settings" RESTART IDENTITY CASCADE;
         `);
         
         console.log('Seeding users...');
@@ -91,8 +92,15 @@ async function seed() {
           offline_message: '我们目前不在。请留言，我们会尽快回复您。',
           accept_new_chats: true,
         };
+        // Use UPSERT for settings
         await sql`
-            INSERT INTO app_settings ${sql(settingsData, 'id', 'primary_color', 'welcome_message', 'offline_message', 'accept_new_chats')}
+            INSERT INTO app_settings ${sql(settingsData)}
+            ON CONFLICT (id) DO UPDATE SET
+                primary_color = EXCLUDED.primary_color,
+                welcome_message = EXCLUDED.welcome_message,
+                offline_message = EXCLUDED.offline_message,
+                accept_new_chats = EXCLUDED.accept_new_chats,
+                updated_at = CURRENT_TIMESTAMP
         `;
         
         console.log('Seeding websites...');

@@ -8,6 +8,7 @@ export async function GET() {
     // 如果没有找到设置，返回默认值，状态码为 200 OK
     if (result.length === 0) {
       return NextResponse.json({
+        id: 1,
         primary_color: '#64B5F6',
         welcome_message: '您好！我们能为您做些什么？',
         offline_message: '我们目前不在。请留言，我们会尽快回复您。',
@@ -50,7 +51,8 @@ export async function POST(request: Request) {
             primary_color = EXCLUDED.primary_color,
             welcome_message = EXCLUDED.welcome_message,
             offline_message = EXCLUDED.offline_message,
-            accept_new_chats = EXCLUDED.accept_new_chats
+            accept_new_chats = EXCLUDED.accept_new_chats,
+            updated_at = CURRENT_TIMESTAMP
         RETURNING *
     `;
     
