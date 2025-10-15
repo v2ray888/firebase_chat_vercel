@@ -2,6 +2,27 @@ import { NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import type { Conversation, Case, Customer, Message } from '@/types';
 
+// 将snake_case转换为camelCase的辅助函数
+function toCamelCase(obj: any): any {
+  if (Array.isArray(obj)) {
+    return obj.map(item => toCamelCase(item));
+  }
+  
+  if (obj !== null && typeof obj === 'object') {
+    const newObj: any = {};
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        // 转换字段名
+        const camelKey = key.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+        newObj[camelKey] = toCamelCase(obj[key]);
+      }
+    }
+    return newObj;
+  }
+  
+  return obj;
+}
+
 export async function GET() {
   try {
     const rows = await sql`
@@ -31,6 +52,8 @@ export async function GET() {
             name: row.customerName,
             email: row.customerEmail,
             avatar: row.customerAvatar,
+            createdAt: '', // 这些字段在当前查询中没有返回
+            updatedAt: ''
         };
 
         const caseInfo: Case = {
@@ -42,15 +65,8 @@ export async function GET() {
             updatedAt: row.caseUpdatedAt,
         };
 
-        const messages: Message[] = (row.messages || []).map((m: any) => ({
-            id: m.id,
-            caseId: m.case_id,
-            senderType: m.sender_type,
-            content: m.content,
-            timestamp: m.timestamp,
-            userId: m.user_id,
-            customerId: m.customer_id
-        }));
+        // 转换消息数组中的字段名
+        const messages: Message[] = (row.messages || []).map((m: any) => toCamelCase(m));
 
         return {
             id: row.caseId,

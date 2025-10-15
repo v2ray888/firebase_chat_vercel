@@ -20,6 +20,21 @@ const statusMap = {
     resolved: '已解决'
 }
 
+// 安全格式化时间的辅助函数
+function safeFormatDistance(dateString: string) {
+  try {
+    const date = new Date(dateString);
+    // 检查日期是否有效
+    if (isNaN(date.getTime())) {
+      return '刚刚';
+    }
+    return formatDistanceToNow(date, { addSuffix: true, locale: zhCN });
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return '刚刚';
+  }
+}
+
 export function ConversationList({
   conversations,
   selectedConversation,
@@ -48,9 +63,9 @@ export function ConversationList({
                     </Avatar>
                     <div className="font-semibold">{item.customer.name}</div>
                 </div>
-                {lastMessage && (
+                {lastMessage && lastMessage.timestamp && (
                   <div className="ml-auto text-xs text-muted-foreground">
-                    {formatDistanceToNow(new Date(lastMessage.timestamp), { addSuffix: true, locale: zhCN })}
+                    {safeFormatDistance(lastMessage.timestamp)}
                   </div>
                 )}
               </div>

@@ -2,9 +2,30 @@ import { NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 
+// 将snake_case转换为camelCase的辅助函数
+function toCamelCase(obj: any): any {
+  if (Array.isArray(obj)) {
+    return obj.map(item => toCamelCase(item));
+  }
+  
+  if (obj !== null && typeof obj === 'object') {
+    const newObj: any = {};
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        // 转换字段名
+        const camelKey = key.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+        newObj[camelKey] = toCamelCase(obj[key]);
+      }
+    }
+    return newObj;
+  }
+  
+  return obj;
+}
+
 export async function POST(request: Request) {
   try {
-    const { case_id, sender_type, content, user_id, customer_id } = await request.json();
+    const { case_id, sender_type, content, user_id, customer_id, image_url } = await request.json();
 
     if (!case_id || !sender_type || !content) {
       return NextResponse.json({ message: '缺少必需字段。' }, { status: 400 });
@@ -13,8 +34,8 @@ export async function POST(request: Request) {
     const timestamp = new Date();
 
     const result = await sql`
-      INSERT INTO messages (case_id, sender_type, content, "timestamp", user_id, customer_id)
-       VALUES (${case_id}, ${sender_type}, ${content}, ${timestamp}, ${user_id || null}, ${customer_id || null})
+      INSERT INTO messages (case_id, sender_type, content, "timestamp", user_id, customer_id, image_url)
+       VALUES (${case_id}, ${sender_type}, ${content}, ${timestamp}, ${user_id || null}, ${customer_id || null}, ${image_url || null})
        RETURNING *
     `;
 
@@ -27,7 +48,9 @@ export async function POST(request: Request) {
     revalidatePath('/dashboard');
     revalidatePath('/api/conversations');
 
-    return NextResponse.json(result[0], { status: 201 });
+    // 转换数据库字段名为camelCase格式
+    const formattedResult = toCamelCase(result[0]);
+    return NextResponse.json(formattedResult, { status: 201 });
   } catch (error) {
     console.error('Failed to create message:', error);
     return NextResponse.json({ message: '内部服务器错误' }, { status: 500 });

@@ -6,8 +6,8 @@ export type User = {
   role: 'agent' | 'admin';
   status: 'online' | 'offline';
   password?: string;
-  createdAt?: string;
-  updatedAt?: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type Customer = {
@@ -15,8 +15,8 @@ export type Customer = {
   name: string;
   email: string;
   avatar: string;
-  createdAt?: string;
-  updatedAt?: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type Message = {
@@ -27,6 +27,7 @@ export type Message = {
   timestamp: string;
   userId?: string; // agent's id
   customerId?: string;
+  imageUrl?: string; // 添加图片URL字段
 };
 
 export type Case = {
@@ -53,3 +54,25 @@ export type Website = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type AppSettings = {
+  id: number;
+  primaryColor: string;
+  welcomeMessage: string;
+  offlineMessage: string;
+  acceptNewChats: boolean;
+  createdAt: string;
+  updatedAt: string;
+  widgetTitle: string;
+  widgetSubtitle: string;
+  autoOpenWidget: boolean;
+  showBranding: boolean;
+  typingIndicatorMessage: string;
+  connectionMessage: string;
+  workStartTime: string;
+  workEndTime: string;
+  autoOffline: boolean;
+  awayMessage: string;
+  enableAiSuggestions: boolean;
+  enableImageUpload: boolean; // 添加图片上传功能开关
+}

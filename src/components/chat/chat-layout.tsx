@@ -12,6 +12,7 @@ import { ChatWindow } from './chat-window';
 import { Card } from '../ui/card';
 import { CaseDetails } from './case-details';
 import { AiSuggestions } from './ai-suggestions';
+import { useEffect, useState } from 'react';
 
 interface ChatLayoutProps {
   conversations: Conversation[];
@@ -36,6 +37,27 @@ export function ChatLayout({
   onSuggestionClick,
   toggleRightPanel,
 }: ChatLayoutProps) {
+  const [enableImageUpload, setEnableImageUpload] = useState(true);
+  
+  // 获取设置以确定是否启用图片上传功能
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch('/api/settings');
+        if (response.ok) {
+          const settings = await response.json();
+          setEnableImageUpload(settings.enableImageUpload ?? true);
+        }
+      } catch (error) {
+        console.error('Failed to fetch settings:', error);
+        // 默认启用图片上传功能
+        setEnableImageUpload(true);
+      }
+    };
+    
+    fetchSettings();
+  }, []);
+  
   const lastCustomerMessage = selectedConversation?.messages.filter(m => m.senderType === 'user').slice(-1)[0];
 
   const handleSelect = (conversation: Conversation) => {
@@ -67,6 +89,7 @@ export function ChatLayout({
                   agentAvatar={agent.avatar}
                   isRightPanelOpen={isRightPanelOpen}
                   toggleRightPanel={toggleRightPanel}
+                  enableImageUpload={enableImageUpload}
                 />
               </Card>
             ) : (

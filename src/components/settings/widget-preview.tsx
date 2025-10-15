@@ -2,16 +2,29 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { MessageSquare, Send, X } from "lucide-react";
+import { MessageSquare, Send, X, Image as ImageIcon } from "lucide-react";
 import { useState } from "react";
 
 interface WidgetPreviewProps {
   primaryColor: string;
   welcomeMessage: string;
+  widgetTitle?: string;
+  widgetSubtitle?: string;
+  autoOpen?: boolean;
+  showBranding?: boolean;
+  enableImageUpload?: boolean;
 }
 
-export function WidgetPreview({ primaryColor, welcomeMessage }: WidgetPreviewProps) {
-  const [isOpen, setIsOpen] = useState(false);
+export function WidgetPreview({ 
+  primaryColor, 
+  welcomeMessage,
+  widgetTitle = "客服支持",
+  widgetSubtitle = "我们通常在几分钟内回复",
+  autoOpen = false,
+  showBranding = true,
+  enableImageUpload = true
+}: WidgetPreviewProps) {
+  const [isOpen, setIsOpen] = useState(autoOpen);
 
   return (
     <div className="relative h-96 w-full rounded-lg bg-muted/30 flex items-center justify-center p-4">
@@ -30,8 +43,8 @@ export function WidgetPreview({ primaryColor, welcomeMessage }: WidgetPreviewPro
                     <div className="p-4 rounded-t-xl text-primary-foreground" style={{ backgroundColor: primaryColor }}>
                         <div className="flex justify-between items-center">
                             <div>
-                                <h3 className="font-bold">霓虹客服</h3>
-                                <p className="text-xs">我们通常在几分钟内回复。</p>
+                                <h3 className="font-bold">{widgetTitle}</h3>
+                                <p className="text-xs">{widgetSubtitle}</p>
                             </div>
                             <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => setIsOpen(false)}>
                                 <X className="h-5 w-5"/>
@@ -46,10 +59,24 @@ export function WidgetPreview({ primaryColor, welcomeMessage }: WidgetPreviewPro
                         </div>
                     </CardContent>
                     <div className="p-2 border-t">
-                        <div className="relative">
-                            <input className="w-full border rounded-md p-2 pr-10 text-sm" placeholder="输入消息..."/>
-                            <Send className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"/>
+                        <div className="relative flex items-center">
+                          {enableImageUpload && (
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 mr-1">
+                              <ImageIcon className="h-4 w-4" />
+                            </Button>
+                          )}
+                          <input 
+                            className="flex-1 border rounded-md p-2 text-sm" 
+                            placeholder="输入消息..."
+                            disabled={!enableImageUpload}
+                          />
+                          <Send className="absolute right-3 h-4 w-4 text-muted-foreground"/>
                         </div>
+                        {showBranding && (
+                          <div className="text-center text-xs text-muted-foreground mt-1">
+                            由 霓虹 提供支持
+                          </div>
+                        )}
                     </div>
                 </Card>
             )}

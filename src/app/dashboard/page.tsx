@@ -22,7 +22,34 @@ export default function DashboardPage() {
         throw new Error('Failed to fetch conversations');
       }
       const convData: Conversation[] = await convResponse.json();
-      setConversations(convData);
+      
+      // 更新对话列表，但保留我们刚刚发送的临时消息
+      setConversations(prev => {
+        // 对于每个从服务器获取的对话
+        return convData.map(conv => {
+          // 检查我们是否在本地有这个对话
+          const localConv = prev.find(c => c.id === conv.id);
+          
+          if (localConv) {
+            // 如果本地对话中有临时消息，我们需要保留它们直到服务器确认
+            const tempMessages = localConv.messages.filter(m => m.id.startsWith('msg-'));
+            
+            // 合并服务器消息和本地临时消息
+            // 但避免重复（如果服务器已经包含了临时消息）
+            const serverMessages = conv.messages.filter(serverMsg => 
+              !tempMessages.some(tempMsg => tempMsg.timestamp === serverMsg.timestamp && tempMsg.content === serverMsg.content)
+            );
+            
+            return {
+              ...conv,
+              messages: [...serverMessages, ...tempMessages]
+            };
+          }
+          
+          // 如果本地没有这个对话，直接使用服务器数据
+          return conv;
+        });
+      });
       
       if (!selectedConvId && convData.length > 0) {
         setSelectedConvId(convData[0].id);
@@ -52,7 +79,7 @@ export default function DashboardPage() {
         if (agentUser) {
           setAgent(agentUser);
         } else {
-           const mockAgent: User = { id: '72890a1a-4530-4355-8854-82531580e0a5', name: 'Alex Doe', email: 'alex.doe@example.com', avatar: 'https://picsum.photos/seed/1/40/40', role: 'agent', status: 'online' };
+           const mockAgent: User = { id: '72890a1a-4530-4355-8854-82531580e0a5', name: 'Alex Doe', email: 'alex.doe@example.com', avatar: 'https://picsum.photos/seed/1/40/40', role: 'agent', status: 'online', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z' };
            setAgent(mockAgent);
         }
 
@@ -100,6 +127,7 @@ export default function DashboardPage() {
                 sender_type: 'agent',
                 content: message.content,
                 user_id: agent.id,
+                image_url: message.imageUrl || null, // 添加imageUrl字段
             }),
         });
 
@@ -121,8 +149,13 @@ export default function DashboardPage() {
                 return c;
             })
         );
-        // After sending message, refresh conversations to get the latest order
-        fetchConversations();
+        
+        // 只在需要时刷新对话列表，而不是每次都刷新
+        // fetchConversations();
+        
+        // 或者，如果我们确实需要刷新，确保使用更新后的数据
+        // 但要避免用旧数据覆盖新数据
+        // 可以通过在fetchConversations中添加适当的缓存策略来实现
 
 
     } catch (error) {

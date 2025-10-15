@@ -4,17 +4,47 @@ import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 export interface AppSettings {
-  primary_color: string;
-  welcome_message: string;
-  offline_message: string;
-  accept_new_chats: boolean;
+  id: number;
+  primaryColor: string;
+  welcomeMessage: string;
+  offlineMessage: string;
+  acceptNewChats: boolean;
+  widgetTitle: string;
+  widgetSubtitle: string;
+  autoOpenWidget: boolean;
+  showBranding: boolean;
+  typingIndicatorMessage: string;
+  connectionMessage: string;
+  workStartTime: string;
+  workEndTime: string;
+  autoOffline: boolean;
+  awayMessage: string;
+  enableAiSuggestions: boolean;
+  enableImageUpload: boolean; // 添加图片上传功能开关
+  createdAt: string;
+  updatedAt: string;
 }
 
 const defaultSettings: AppSettings = {
-  primary_color: '#64B5F6',
-  welcome_message: '您好！我们能为您做些什么？',
-  offline_message: '我们目前不在。请留言，我们会尽快回复您。',
-  accept_new_chats: true,
+  id: 1,
+  primaryColor: '#64B5F6',
+  welcomeMessage: '您好！我们能为您做些什么？',
+  offlineMessage: '我们目前不在。请留言，我们会尽快回复您。',
+  acceptNewChats: true,
+  widgetTitle: '客服支持',
+  widgetSubtitle: '我们通常在几分钟内回复',
+  autoOpenWidget: false,
+  showBranding: true,
+  typingIndicatorMessage: '客服正在输入...',
+  connectionMessage: '已连接到客服',
+  workStartTime: '09:00',
+  workEndTime: '18:00',
+  autoOffline: false,
+  awayMessage: '我现在不在，但我稍后会回复您。',
+  enableAiSuggestions: true,
+  enableImageUpload: true, // 默认启用图片上传功能
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
 };
 
 export function useSettings() {
@@ -60,17 +90,10 @@ export function useSettings() {
   const handleSaveChanges = async () => {
     setSaving(true);
     try {
-      const payload: AppSettings = {
-        primary_color: settings.primary_color,
-        welcome_message: settings.welcome_message,
-        offline_message: settings.offline_message,
-        accept_new_chats: settings.accept_new_chats,
-      };
-
       const response = await fetch('/api/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(settings),
       });
 
       const responseData = await response.json();
