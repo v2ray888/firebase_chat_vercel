@@ -331,10 +331,10 @@ function WidgetClient({ website, settings, widgetId }: {
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 bg-black/80 z-50" />
           <Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 max-w-4xl max-h-[90vh] p-0">
-            <Dialog.DialogHeader className="p-4 border-b">
-              <Dialog.DialogTitle className="text-lg font-semibold">图片预览</Dialog.DialogTitle>
-              <Dialog.DialogDescription className="text-sm text-muted-foreground">点击查看原图</Dialog.DialogDescription>
-            </Dialog.DialogHeader>
+            <div className="p-4 border-b">
+              <h3 className="text-lg font-semibold">图片预览</h3>
+              <p className="text-sm text-muted-foreground">点击查看原图</p>
+            </div>
             <div className="flex items-center justify-center p-4 bg-black/90 h-[calc(90vh-100px)]">
               <img 
                 src={currentImageSrc} 
@@ -342,11 +342,11 @@ function WidgetClient({ website, settings, widgetId }: {
                 className="max-h-full max-w-full object-contain"
               />
             </div>
-            <Dialog.DialogClose className="absolute top-4 right-4 text-white hover:text-gray-300">
+            <Dialog.Close className="absolute top-4 right-4 text-white hover:text-gray-300">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
-            </Dialog.DialogClose>
+            </Dialog.Close>
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
