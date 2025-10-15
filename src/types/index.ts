@@ -44,3 +44,12 @@ export type Conversation = {
   messages: Message[];
   case: Case;
 };
+
+export type Website = {
+  id: string;
+  name: string;
+  url: string;
+  user_id: string;
+  created_at: string;
+  updated_at: string;
+};

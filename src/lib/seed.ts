@@ -9,7 +9,7 @@ async function seed() {
     // Start a transaction
     await sql.begin(async (sql) => {
         // Clear existing data from dependent tables first
-        await sql`TRUNCATE users, customers, cases, messages RESTART IDENTITY CASCADE`;
+        await sql`TRUNCATE users, customers, cases, messages, websites RESTART IDENTITY CASCADE`;
         // Clear settings table separately and safely
         await sql`DELETE FROM app_settings`;
         console.log('Cleared existing data.');
@@ -29,8 +29,9 @@ async function seed() {
 
         const userInserts = await sql`
             INSERT INTO users ${sql(hashedUsers, 'name', 'email', 'password', 'role', 'status', 'avatar')}
-            RETURNING id`;
+            RETURNING id, email`;
         const userIds = userInserts.map(u => u.id);
+        const alexDoeUser = userInserts.find(u => u.email === 'alex.doe@example.com');
         console.log(`Seeded ${userIds.length} users.`);
 
 
@@ -103,6 +104,15 @@ async function seed() {
                 accept_new_chats = EXCLUDED.accept_new_chats;
         `;
         console.log('Seeded app settings.');
+
+        // Seed Websites
+        if (alexDoeUser) {
+            await sql`
+                INSERT INTO websites (name, url, user_id)
+                VALUES ('霓虹示例网站', 'https://example.com', ${alexDoeUser.id})
+            `;
+            console.log('Seeded websites.');
+        }
 
     }); // End transaction
 
