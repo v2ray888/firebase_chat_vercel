@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Widget Debug Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Widget Debug Test Page</h1>
+        <div class="content">
+            <p>This is a test page for debugging the NeonSupport widget.</p>
+            <p>检查以下几点：</p>
+            <ul>
+                <li>确保widget容器已正确添加到页面</li>
+                <li>确保widget脚本已正确加载</li>
+                <li>检查浏览器控制台是否有错误信息</li>
+            </ul>
+        </div>
+        
+        <!-- 添加 widget 容器 -->
+        <div id="neonsupport-widget-container"></div>
+    </div>
+    
+    <!-- 加载 widget 脚本 -->
+    <script 
+        src="http://localhost:9002/widget.js" 
+        data-widget-id="test-widget"
+        data-base-url="http://localhost:9002"
+        defer>
+    </script>
+</body>
+</html>
