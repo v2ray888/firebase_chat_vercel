@@ -5,6 +5,7 @@ import type { Conversation, Message, User } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ChatLayout } from '@/components/chat/chat-layout';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/auth-context'; // 添加这行
 
 
 export default function DashboardPage() {
@@ -14,6 +15,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [isRightPanelOpen, setIsRightPanelOpen] = useState(true);
   const { toast } = useToast();
+  const { user: currentUser } = useAuth(); // 使用当前认证用户
 
   const fetchConversations = async () => {
     try {
@@ -69,18 +71,24 @@ export default function DashboardPage() {
       await fetchConversations();
 
       try {
-        const usersResponse = await fetch('/api/users');
-        if (!usersResponse.ok) {
-          throw new Error('Failed to fetch users');
-        }
-        const users = await usersResponse.json();
-        const agentUser = users.find((u: User) => u.email === 'alex.doe@example.com');
-
-        if (agentUser) {
-          setAgent(agentUser);
+        // 使用当前认证用户而不是硬编码用户
+        if (currentUser) {
+          setAgent(currentUser);
         } else {
-           const mockAgent: User = { id: '72890a1a-4530-4355-8854-82531580e0a5', name: 'Alex Doe', email: 'alex.doe@example.com', avatar: 'https://picsum.photos/seed/1/40/40', role: 'agent', status: 'online', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z' };
-           setAgent(mockAgent);
+          // 如果没有当前用户，尝试从API获取
+          const usersResponse = await fetch('/api/users');
+          if (!usersResponse.ok) {
+            throw new Error('Failed to fetch users');
+          }
+          const users = await usersResponse.json();
+          const agentUser = users.find((u: User) => u.email === 'alex.doe@example.com');
+
+          if (agentUser) {
+            setAgent(agentUser);
+          } else {
+             const mockAgent: User = { id: '72890a1a-4530-4355-8854-82531580e0a5', name: 'Alex Doe', email: 'alex.doe@example.com', avatar: 'https://picsum.photos/seed/1/40/40', role: 'agent', status: 'online', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z' };
+             setAgent(mockAgent);
+          }
         }
 
       } catch (error) {
@@ -91,7 +99,7 @@ export default function DashboardPage() {
       }
     }
     fetchData();
-  }, []);
+  }, [currentUser]); // 添加currentUser作为依赖
 
   const selectedConversation = conversations.find(c => c.id === selectedConvId) || null;
 

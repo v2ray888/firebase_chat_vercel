@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import * as Dialog from '@radix-ui/react-dialog';
 
 function WidgetClient({ website, settings, widgetId }: { 
   website: any; 
@@ -14,6 +15,9 @@ function WidgetClient({ website, settings, widgetId }: {
   const [newMessage, setNewMessage] = useState('');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  // 添加用于控制图片查看器模态框的状态
+  const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
+  const [currentImageSrc, setCurrentImageSrc] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   // 通知父窗口 widget 已准备就绪
@@ -141,6 +145,18 @@ function WidgetClient({ website, settings, widgetId }: {
     }
   };
   
+  // 添加打开图片查看器的函数
+  const openImageViewer = (src: string) => {
+    setCurrentImageSrc(src);
+    setIsImageViewerOpen(true);
+  };
+
+  // 添加关闭图片查看器的函数
+  const closeImageViewer = () => {
+    setIsImageViewerOpen(false);
+    setCurrentImageSrc('');
+  };
+  
   if (!isChatOpen) {
     return (
       <div className="h-full w-full flex items-center justify-center bg-white">
@@ -215,7 +231,8 @@ function WidgetClient({ website, settings, widgetId }: {
                   <img 
                     src={message.imageUrl} 
                     alt="发送的图片" 
-                    className="max-w-full h-auto rounded-md"
+                    className="max-w-full h-auto rounded-md cursor-pointer hover:opacity-90 transition-opacity"
+                    onClick={() => openImageViewer(message.imageUrl)}
                   />
                   {message.content && message.content !== '[图片]' && (
                     <p className="text-sm mt-2">{message.content}</p>
@@ -308,6 +325,31 @@ function WidgetClient({ website, settings, widgetId }: {
           </div>
         </form>
       </div>
+      
+      {/* 添加图片查看器模态框 */}
+      <Dialog.Root open={isImageViewerOpen} onOpenChange={setIsImageViewerOpen}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 bg-black/80 z-50" />
+          <Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 max-w-4xl max-h-[90vh] p-0">
+            <Dialog.DialogHeader className="p-4 border-b">
+              <Dialog.DialogTitle className="text-lg font-semibold">图片预览</Dialog.DialogTitle>
+              <Dialog.DialogDescription className="text-sm text-muted-foreground">点击查看原图</Dialog.DialogDescription>
+            </Dialog.DialogHeader>
+            <div className="flex items-center justify-center p-4 bg-black/90 h-[calc(90vh-100px)]">
+              <img 
+                src={currentImageSrc} 
+                alt="原图" 
+                className="max-h-full max-w-full object-contain"
+              />
+            </div>
+            <Dialog.DialogClose className="absolute top-4 right-4 text-white hover:text-gray-300">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </Dialog.DialogClose>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
     </div>
   );
 }

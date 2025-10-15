@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { Inter, Noto_Sans_SC } from 'next/font/google'
+import { AuthProvider } from '@/contexts/auth-context';
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -27,7 +28,9 @@ export default function RootLayout({
   return (
     <html lang="zh" className={`${inter.variable} ${noto_sans_sc.variable}`} suppressHydrationWarning>
       <body className="font-body antialiased">
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
         <Toaster />
       </body>
     </html>

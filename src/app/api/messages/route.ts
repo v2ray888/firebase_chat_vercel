@@ -25,11 +25,7 @@ function toCamelCase(obj: any): any {
 
 export async function POST(request: Request) {
   try {
-<<<<<<< HEAD
-    const { case_id, sender_type, content, user_id, customer_id, image_url } = await request.json();
-=======
-    const { caseId, senderType, content, userId, customerId } = await request.json();
->>>>>>> 397514edb21c0d3505dba3525893063086b66a55
+    const { caseId, senderType, content, userId, customerId, imageUrl } = await request.json();
 
     if (!caseId || !senderType || !content) {
       return NextResponse.json({ message: '缺少必需字段。' }, { status: 400 });
@@ -45,18 +41,13 @@ export async function POST(request: Request) {
       content,
       timestamp,
       userId: userId || null,
-      customerId: customerId || null
+      customerId: customerId || null,
+      imageUrl: imageUrl || null
     };
 
     const result = await sql`
-<<<<<<< HEAD
-      INSERT INTO messages (case_id, sender_type, content, "timestamp", user_id, customer_id, image_url)
-       VALUES (${case_id}, ${sender_type}, ${content}, ${timestamp}, ${user_id || null}, ${customer_id || null}, ${image_url || null})
-       RETURNING *
-=======
       INSERT INTO messages ${sql(messageData)}
       RETURNING *
->>>>>>> 397514edb21c0d3505dba3525893063086b66a55
     `;
 
     // Also update the case's updated_at timestamp

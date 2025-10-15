@@ -38,8 +38,10 @@ export function ChatLayout({
   toggleRightPanel,
 }: ChatLayoutProps) {
   const [enableImageUpload, setEnableImageUpload] = useState(true);
+  // 添加AI建议功能开关状态
+  const [enableAiSuggestions, setEnableAiSuggestions] = useState(true);
   
-  // 获取设置以确定是否启用图片上传功能
+  // 获取设置以确定是否启用图片上传功能和AI建议功能
   useEffect(() => {
     const fetchSettings = async () => {
       try {
@@ -47,11 +49,13 @@ export function ChatLayout({
         if (response.ok) {
           const settings = await response.json();
           setEnableImageUpload(settings.enableImageUpload ?? true);
+          setEnableAiSuggestions(settings.enableAiSuggestions ?? true);
         }
       } catch (error) {
         console.error('Failed to fetch settings:', error);
-        // 默认启用图片上传功能
+        // 默认启用图片上传功能和AI建议功能
         setEnableImageUpload(true);
+        setEnableAiSuggestions(true);
       }
     };
     
@@ -105,7 +109,7 @@ export function ChatLayout({
               'overflow-hidden'
             )}
           >
-            {selectedConversation && (
+            {selectedConversation && enableAiSuggestions && (
               <Card className="flex h-full flex-col">
                 <div className="flex-shrink-0">
                   <CaseDetails

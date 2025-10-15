@@ -2,14 +2,8 @@ import { NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import bcrypt from 'bcryptjs';
 
-type RouteParams = {
-    params: {
-        id: string;
-    }
-}
-
-export async function GET(request: Request, { params }: RouteParams) {
-  const { id } = params;
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   try {
     const result = await sql`SELECT id, name, email, avatar, role, status, created_at, updated_at FROM users WHERE id = ${id}`;
     if (result.length === 0) {
@@ -23,8 +17,8 @@ export async function GET(request: Request, { params }: RouteParams) {
 }
 
 
-export async function PATCH(request: Request, { params }: RouteParams) {
-  const { id } = params;
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   if (!id) {
       return NextResponse.json({ message: '缺少用户 ID。' }, { status: 400 });
   }
@@ -70,8 +64,8 @@ export async function PATCH(request: Request, { params }: RouteParams) {
 }
 
 
-export async function DELETE(request: Request, { params }: RouteParams) {
-  const { id } = params;
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   if (!id) {
       return NextResponse.json({ message: '缺少用户 ID。' }, { status: 400 });
   }

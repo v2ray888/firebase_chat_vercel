@@ -11,7 +11,7 @@ async function seed() {
       // The schema.sql now handles dropping tables, so we just seed.
       console.log('Clearing existing data...');
       await sql.unsafe(`
-          TRUNCATE TABLE "messages", "websites", "cases", "customers", "users", "app_settings" RESTART IDENTITY CASCADE;
+          TRUNCATE TABLE "messages", "websites", "cases", "customers", "users", "app_settings", "quick_replies" RESTART IDENTITY CASCADE;
       `);
       
       console.log('Seeding users...');
@@ -83,7 +83,6 @@ async function seed() {
         welcome_message: '您好！我们能为您做些什么？',
         offline_message: '我们目前不在。请留言，我们会尽快回复您。',
         accept_new_chats: true,
-<<<<<<< HEAD
         widget_title: '客服支持',
         widget_subtitle: '我们通常在几分钟内回复',
         auto_open_widget: false,
@@ -96,8 +95,6 @@ async function seed() {
         away_message: '我现在不在，但我稍后会回复您。',
         enable_ai_suggestions: true,
         enable_image_upload: true  // 添加图片上传功能开关
-=======
->>>>>>> 397514edb21c0d3505dba3525893063086b66a55
       };
       await sql`
           INSERT INTO app_settings ${sql(settingsData)}
@@ -106,7 +103,6 @@ async function seed() {
               welcome_message = EXCLUDED.welcome_message,
               offline_message = EXCLUDED.offline_message,
               accept_new_chats = EXCLUDED.accept_new_chats,
-<<<<<<< HEAD
               widget_title = EXCLUDED.widget_title,
               widget_subtitle = EXCLUDED.widget_subtitle,
               auto_open_widget = EXCLUDED.auto_open_widget,
@@ -119,8 +115,6 @@ async function seed() {
               away_message = EXCLUDED.away_message,
               enable_ai_suggestions = EXCLUDED.enable_ai_suggestions,
               enable_image_upload = EXCLUDED.enable_image_upload,
-=======
->>>>>>> 397514edb21c0d3505dba3525893063086b66a55
               updated_at = CURRENT_TIMESTAMP
       `;
       
@@ -129,6 +123,15 @@ async function seed() {
           { name: '霓虹示例网站', url: 'https://example.com', userId: userIds.alex }
       ];
       await sql`INSERT INTO websites ${sql(websitesToInsert, 'name', 'url', 'userId')}`;
+      
+      console.log('Seeding quick replies...');
+      const quickRepliesToInsert = [
+        { content: '您好，请问有什么可以帮助您的吗？', sort_order: 0 },
+        { content: '感谢您的咨询，我们会在24小时内回复您。', sort_order: 1 },
+        { content: '如果您有紧急问题，请拨打我们的客服热线。', sort_order: 2 },
+        { content: '我们的工作时间是周一至周五，上午9点到下午6点。', sort_order: 3 }
+      ];
+      await sql`INSERT INTO quick_replies ${sql(quickRepliesToInsert, 'content', 'sort_order')}`;
     });
 
     console.log('Database seeding complete.');

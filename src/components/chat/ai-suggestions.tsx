@@ -32,8 +32,12 @@ export function AiSuggestions({ customerQuery, chatHistory, onSuggestionClick }:
           setSuggestions(response.suggestedResponses);
         } catch (error) {
           console.error("未能获取AI建议:", error);
-          // Handle error gracefully in a real app, maybe show a toast.
-          setSuggestions([]);
+          // 在没有有效API密钥的情况下，提供一些默认建议
+          setSuggestions([
+            "您好！感谢您的咨询，我会尽快回复您。",
+            "我理解您的问题，让我帮您解决。",
+            "请稍等，我正在查看相关信息。"
+          ]);
         } finally {
           setLoading(false);
         }

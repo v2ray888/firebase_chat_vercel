@@ -5,52 +5,67 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/auth-context';
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
+  const { user, login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // 如果用户已经登录，直接重定向
+  useEffect(() => {
+    if (user) {
+      const redirect = searchParams.get('redirect') || '/dashboard';
+      router.push(redirect);
+    }
+  }, [user, router, searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (response.ok) {
+      console.log("开始登录请求");
+      const result = await login(email, password);
+      
+      if (result.success) {
         toast({
             title: "登录成功",
-            description: "正在跳转到仪表盘...",
+            description: "正在跳转...",
         });
-        router.push('/dashboard');
+        
+        // 获取redirect参数，如果没有则默认跳转到'/dashboard'
+        const redirect = searchParams.get('redirect') || '/dashboard';
+        console.log("跳转目标:", redirect);
+        
+        // 添加一个小延迟，确保toast消息能够显示
+        setTimeout(() => {
+          console.log("执行跳转到:", redirect);
+          router.push(redirect);
+        }, 1000);
       } else {
-        const errorData = await response.json();
         toast({
             variant: "destructive",
             title: "登录失败",
-            description: errorData.message || '无效的电子邮件或密码。',
+            description: result.message || '无效的电子邮件或密码。',
         });
+        setLoading(false);
       }
     } catch (error) {
+        console.error("登录过程中发生错误:", error);
         toast({
             variant: "destructive",
             title: "发生错误",
             description: '无法连接到服务器。请稍后再试。',
         });
-    } finally {
-      setLoading(false);
+        setLoading(false);
     }
   };
 

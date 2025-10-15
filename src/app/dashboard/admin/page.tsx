@@ -53,18 +53,46 @@ import {
 } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/auth-context";
 
 
 export default function AdminPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user: currentUser, loading: authLoading } = useAuth();
   const { toast } = useToast();
+  const router = useRouter();
+
+  // 添加调试信息
+  console.log("AdminPage渲染 - currentUser:", currentUser, "authLoading:", authLoading);
 
   // State for Add/Edit dialogs
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [currentUser, setCurrentUser] = useState<Partial<User>>({});
+  const [currentUserData, setCurrentUser] = useState<Partial<User>>({});
   const [formLoading, setFormLoading] = useState(false);
+
+  // 检查用户权限
+  useEffect(() => {
+    console.log("权限检查 useEffect 触发 - authLoading:", authLoading, "currentUser:", currentUser);
+    if (!authLoading && currentUser) {
+      console.log("检查用户角色 - 当前角色:", currentUser.role, "是否为管理员:", currentUser.role === 'admin');
+      // 如果不是管理员，重定向到主页
+      if (currentUser.role !== 'admin') {
+        console.log("用户不是管理员，重定向到仪表板");
+        toast({
+          title: '访问被拒绝',
+          description: '您没有权限访问此页面。',
+          variant: 'destructive',
+        });
+        router.push('/dashboard');
+        return; // 添加return以确保不会继续执行
+      } else {
+        console.log("用户是管理员，允许访问");
+      }
+    }
+  }, [currentUser, authLoading, router, toast]);
 
   const fetchUsers = async () => {
       setLoading(true);
@@ -84,8 +112,11 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    // 只有管理员才能获取用户列表
+    if (currentUser && currentUser.role === 'admin') {
+      fetchUsers();
+    }
+  }, [currentUser]);
 
   const handleOpenDialog = (user?: User) => {
     if (user) {
@@ -100,16 +131,16 @@ export default function AdminPage() {
 
   const handleSaveChanges = async () => {
     setFormLoading(true);
-    const url = isEdit ? `/api/users/${currentUser.id}` : '/api/users';
+    const url = isEdit ? `/api/users/${currentUserData.id}` : '/api/users';
     const method = isEdit ? 'PATCH' : 'POST';
 
     // Basic validation
-    if (!isEdit && (!currentUser.name || !currentUser.email || !currentUser.password)) {
+    if (!isEdit && (!currentUserData.name || !currentUserData.email || !currentUserData.password)) {
         toast({ variant: "destructive", title: "错误", description: "请填写所有必填字段。" });
         setFormLoading(false);
         return;
     }
-     if (isEdit && (!currentUser.name || !currentUser.email)) {
+     if (isEdit && (!currentUserData.name || !currentUserData.email)) {
         toast({ variant: "destructive", title: "错误", description: "名称和电子邮件是必填项。" });
         setFormLoading(false);
         return;
@@ -119,7 +150,7 @@ export default function AdminPage() {
         const response = await fetch(url, {
             method: method,
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(currentUser),
+            body: JSON.stringify(currentUserData),
         });
 
         if (!response.ok) {
@@ -152,7 +183,37 @@ export default function AdminPage() {
     }
   };
 
+  // 如果仍在检查权限，显示加载状态
+  if (authLoading) {
+    return (
+        <div className="flex-1 p-4 md:p-6 lg:p-8">
+            <div className="flex items-center justify-between mb-6">
+                <div>
+                    <Skeleton className="h-8 w-48 mb-2" />
+                    <Skeleton className="h-4 w-64" />
+                </div>
+                <Skeleton className="h-10 w-28" />
+            </div>
+            <Card>
+                <CardContent className="p-0">
+                   <div className="p-4 space-y-4">
+                        <Skeleton className="h-12 w-full" />
+                        <Skeleton className="h-12 w-full" />
+                        <Skeleton className="h-12 w-full" />
+                        <Skeleton className="h-12 w-full" />
+                   </div>
+                </CardContent>
+            </Card>
+        </div>
+    )
+  }
 
+  // 如果用户不是管理员，不渲染页面内容（因为会被重定向）
+  if (currentUser && currentUser.role !== 'admin') {
+    return null; // 或者返回一个空的加载状态
+  }
+
+  // 如果页面仍在加载中，显示加载状态
   if (loading) {
     return (
         <div className="flex-1 p-4 md:p-6 lg:p-8">
@@ -275,21 +336,21 @@ export default function AdminPage() {
                 <div className="grid gap-4 py-4">
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="name" className="text-right">名称</Label>
-                        <Input id="name" value={currentUser.name || ''} onChange={(e) => setCurrentUser({...currentUser, name: e.target.value})} className="col-span-3" />
+                        <Input id="name" value={currentUserData.name || ''} onChange={(e) => setCurrentUser({...currentUserData, name: e.target.value})} className="col-span-3" />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="email" className="text-right">电子邮件</Label>
-                        <Input id="email" type="email" value={currentUser.email || ''} onChange={(e) => setCurrentUser({...currentUser, email: e.target.value})} className="col-span-3" />
+                        <Input id="email" type="email" value={currentUserData.email || ''} onChange={(e) => setCurrentUser({...currentUserData, email: e.target.value})} className="col-span-3" />
                     </div>
                     {!isEdit && (
                          <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="password" className="text-right">密码</Label>
-                            <Input id="password" type="password" value={currentUser.password || ''} onChange={(e) => setCurrentUser({...currentUser, password: e.target.value})} className="col-span-3" />
+                            <Input id="password" type="password" value={currentUserData.password || ''} onChange={(e) => setCurrentUser({...currentUserData, password: e.target.value})} className="col-span-3" />
                         </div>
                     )}
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="role" className="text-right">角色</Label>
-                        <Select value={currentUser.role} onValueChange={(value: 'agent' | 'admin') => setCurrentUser({...currentUser, role: value})}>
+                        <Select value={currentUserData.role} onValueChange={(value: 'agent' | 'admin') => setCurrentUser({...currentUserData, role: value})}>
                             <SelectTrigger className="col-span-3">
                                 <SelectValue placeholder="选择一个角色" />
                             </SelectTrigger>
@@ -301,7 +362,7 @@ export default function AdminPage() {
                     </div>
                      <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="status" className="text-right">状态</Label>
-                        <Select value={currentUser.status} onValueChange={(value: 'online' | 'offline') => setCurrentUser({...currentUser, status: value})}>
+                        <Select value={currentUserData.status} onValueChange={(value: 'online' | 'offline') => setCurrentUser({...currentUserData, status: value})}>
                             <SelectTrigger className="col-span-3">
                                 <SelectValue placeholder="选择一个状态" />
                             </SelectTrigger>
@@ -323,5 +384,3 @@ export default function AdminPage() {
     </div>
   );
 }
-
-    

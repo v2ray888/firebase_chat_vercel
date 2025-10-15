@@ -57,7 +57,6 @@ export type Website = {
 
 export type AppSettings = {
   id: number;
-<<<<<<< HEAD
   primaryColor: string;
   welcomeMessage: string;
   offlineMessage: string;
@@ -77,12 +76,3 @@ export type AppSettings = {
   enableAiSuggestions: boolean;
   enableImageUpload: boolean; // 添加图片上传功能开关
 }
-=======
-  primary_color: string;
-  welcome_message: string;
-  offline_message: string;
-  accept_new_chats: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
->>>>>>> 397514edb21c0d3505dba3525893063086b66a55

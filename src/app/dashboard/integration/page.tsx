@@ -28,7 +28,7 @@ export default function IntegrationPage() {
     
     const codeSnippet = selectedWebsite ? `<div id="neonsupport-widget-container"></div>
 <script 
-  src="${process.env.NEXT_PUBLIC_APP_URL || 'https://your-app-domain.com'}/widget.js" 
+  src="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/widget.js" 
   data-widget-id="${selectedWebsite.id}" 
   defer>
 </script>` : '请先选择或添加一个网站以生成代码片段。';

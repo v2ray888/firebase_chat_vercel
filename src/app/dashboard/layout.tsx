@@ -14,8 +14,10 @@ import {
   Settings,
   Code,
   Users,
+  User,
 } from "lucide-react"
 import { DashboardHeader } from "@/components/dashboard-header";
+import { useAuth } from "@/contexts/auth-context";
 
 
 export default function DashboardLayout({
@@ -24,6 +26,7 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   const pathname = usePathname();
+  const { user } = useAuth();
 
   const isActive = (path: string) => pathname === path;
 
@@ -63,11 +66,22 @@ export default function DashboardLayout({
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>
+              {/* 只有管理员用户才显示管理链接 */}
+              {user?.role === 'admin' && (
+                <SidebarMenuItem>
+                  <Link href="/dashboard/admin">
+                    <SidebarMenuButton isActive={isActive('/dashboard/admin')} tooltip="管理">
+                      <Users />
+                      <span>管理</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
+              )}
               <SidebarMenuItem>
-                <Link href="/dashboard/admin">
-                  <SidebarMenuButton isActive={isActive('/dashboard/admin')} tooltip="管理">
-                    <Users />
-                    <span>管理</span>
+                <Link href="/dashboard/profile">
+                  <SidebarMenuButton isActive={isActive('/dashboard/profile')} tooltip="个人资料">
+                    <User />
+                    <span>个人资料</span>
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>

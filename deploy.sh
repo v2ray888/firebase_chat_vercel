@@ -1,17 +1,53 @@
+#!/bin/bash
+
+# 部署脚本
+echo "开始准备部署包..."
+
+# 创建部署目录
+mkdir -p deployment
+mkdir -p deployment/src
+
+# 复制必要文件
+cp -r src deployment/
+cp package.json deployment/
+cp next.config.ts deployment/
+cp tsconfig.json deployment/
+cp tailwind.config.ts deployment/
+cp postcss.config.mjs deployment/
+cp components.json deployment/
+cp .env.production deployment/.env
+cp -r public deployment/
+
+# 创建部署说明
+cat > deployment/README.md << EOF
+# 部署说明
+
+## 安装依赖
+npm install
+
+## 构建应用
+npm run build
+
+## 启动应用
+npm start
+
+## 环境变量
+请确保配置了正确的环境变量：
+- NEXT_PUBLIC_APP_URL
+- POSTGRES_URL
+- GEMINI_API_KEY (可选)
+EOF
+
+# 创建package.json用于部署
+cat > deployment/package.json << EOF
 {
-  "name": "nextn",
-  "version": "0.1.0",
+  "name": "chat-app",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack -p 9002",
-    "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
-    "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
-    "build": "NODE_ENV=production next build",
+    "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "typecheck": "tsc --noEmit",
-    "db:setup": "node -e \"require('dotenv').config(); const postgres = require('postgres'); const fs = require('fs'); const sqlContent = fs.readFileSync('src/lib/schema.sql').toString(); const dbUrl = process.env.POSTGRES_URL; if (!dbUrl) { throw new Error('POSTGRES_URL is not set'); } const sql = postgres(dbUrl); sql.unsafe(sqlContent).then(() => console.log('Database setup complete.')).catch(err => console.error('Database setup failed:', err)).finally(() => sql.end());\"",
-    "db:seed": "node --import tsx src/lib/seed.ts"
+    "lint": "next lint"
   },
   "dependencies": {
     "@genkit-ai/google-genai": "^1.20.0",
@@ -51,7 +87,6 @@
     "lucide-react": "^0.475.0",
     "next": "15.3.3",
     "next-themes": "^0.3.0",
-    "patch-package": "^8.0.0",
     "postgres": "^3.4.4",
     "react": "^18.3.1",
     "react-day-picker": "^8.10.1",
@@ -62,17 +97,9 @@
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.24.2"
-  },
-  "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "genkit-cli": "^1.20.0",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
-    "ts-node": "^10.9.2",
-    "tsx": "^4.16.2",
-    "typescript": "^5"
   }
 }
+EOF
+
+echo "部署包已准备完成，位于 deployment 目录中"
+echo "请根据你的部署平台配置环境变量并运行应用"

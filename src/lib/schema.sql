@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS "cases" CASCADE;
 DROP TABLE IF EXISTS "customers" CASCADE;
 DROP TABLE IF EXISTS "users" CASCADE;
 DROP TABLE IF EXISTS "app_settings" CASCADE;
+DROP TABLE IF EXISTS "quick_replies" CASCADE;
 
 -- Create users table
 CREATE TABLE "users" (
@@ -47,12 +48,8 @@ CREATE TABLE "messages" (
   "content" TEXT NOT NULL,
   "timestamp" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   "user_id" UUID REFERENCES "users"("id") ON DELETE SET NULL,
-<<<<<<< HEAD
   "customer_id" UUID REFERENCES "customers"("id") ON DELETE SET NULL,
   "image_url" TEXT  -- 添加图片URL字段
-=======
-  "customer_id" UUID REFERENCES "customers"("id") ON DELETE SET NULL
->>>>>>> 397514edb21c0d3505dba3525893063086b66a55
 );
 
 -- Create websites table
@@ -72,7 +69,6 @@ CREATE TABLE "app_settings" (
     "welcome_message" TEXT NOT NULL DEFAULT '您好！我们能为您做些什么？',
     "offline_message" TEXT NOT NULL DEFAULT '我们目前不在。请留言，我们会尽快回复您。',
     "accept_new_chats" BOOLEAN NOT NULL DEFAULT TRUE,
-<<<<<<< HEAD
     "widget_title" VARCHAR(255) NOT NULL DEFAULT '客服支持',
     "widget_subtitle" VARCHAR(255) NOT NULL DEFAULT '我们通常在几分钟内回复',
     "auto_open_widget" BOOLEAN NOT NULL DEFAULT FALSE,
@@ -85,13 +81,10 @@ CREATE TABLE "app_settings" (
     "away_message" TEXT NOT NULL DEFAULT '我现在不在，但我稍后会回复您。',
     "enable_ai_suggestions" BOOLEAN NOT NULL DEFAULT TRUE,
     "enable_image_upload" BOOLEAN NOT NULL DEFAULT TRUE,  -- 添加图片上传开关字段
-=======
->>>>>>> 397514edb21c0d3505dba3525893063086b66a55
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     "updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-<<<<<<< HEAD
 -- Create quick_replies table
 CREATE TABLE "quick_replies" (
     "id" SERIAL PRIMARY KEY,
@@ -101,15 +94,9 @@ CREATE TABLE "quick_replies" (
     "updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-=======
->>>>>>> 397514edb21c0d3505dba3525893063086b66a55
 -- Add indexes for foreign keys to improve performance
 CREATE INDEX ON "cases" ("customer_id");
 CREATE INDEX ON "messages" ("case_id");
 CREATE INDEX ON "messages" ("user_id");
 CREATE INDEX ON "messages" ("customer_id");
-<<<<<<< HEAD
 CREATE INDEX ON "websites" ("user_id");
-=======
-CREATE INDEX ON "websites" ("user_id");
->>>>>>> 397514edb21c0d3505dba3525893063086b66a55
