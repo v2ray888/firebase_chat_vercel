@@ -76,3 +76,17 @@ For example, if your Vercel deployment URL is `https://your-app.vercel.app`, the
 ```
 
 The `data-base-url` attribute is important for ensuring the widget works correctly in production environments.
+
+### Troubleshooting
+
+If the widget is not displaying:
+
+1. Check the browser console for any error messages
+2. Ensure the `data-widget-id` attribute is set to a valid widget ID
+3. Verify that your deployment URL is correct
+4. Make sure you're using the `data-base-url` attribute in production environments
+5. Check that the widget.js file is being loaded correctly by looking at the Network tab in developer tools
+
+### Testing Locally
+
+To test the widget locally, you can open the `test-widget.html` file in your browser. This file contains a simple HTML page with the widget integration code.

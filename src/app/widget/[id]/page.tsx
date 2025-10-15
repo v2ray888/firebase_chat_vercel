@@ -353,3 +353,28 @@ function WidgetClient({ website, settings, widgetId }: {
     </div>
   );
 }
+
+// 服务器组件
+export default async function WidgetPage({ params }: { params: { id: string } }) {
+  // 获取应用设置
+  const settingsResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/settings`, {
+    next: { revalidate: 60 } // 60秒重新验证缓存
+  });
+  
+  if (!settingsResponse.ok) {
+    console.error('Failed to fetch settings:', settingsResponse.status, settingsResponse.statusText);
+    // 返回默认设置
+    const defaultSettings = {
+      primary_color: '#64B5F6',
+      welcome_message: '您好！我们能为您做些什么？',
+      enable_image_upload: true
+    };
+    
+    return <WidgetClient website={null} settings={defaultSettings} widgetId={params.id} />;
+  }
+  
+  const settings = await settingsResponse.json();
+  
+  // 返回客户端组件
+  return <WidgetClient website={null} settings={settings} widgetId={params.id} />;
+}
