@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简单小部件测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .content {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        p {
+            color: #666;
+            line-height: 1.6;
+        }
+        .test-area {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+        }
+        .settings-form {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        .settings-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .settings-form input, .settings-form textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .settings-form button {
+            background-color: #64B5F6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>简单小部件测试</h1>
+        <p>这个页面用于测试简化版的小部件功能。小部件应该会自动出现在页面右下角。</p>
+        
+        <div class="settings-form">
+            <h2>自定义小部件设置</h2>
+            <label for="primary-color">主色:</label>
+            <input type="color" id="primary-color" value="#64B5F6">
+            
+            <label for="widget-title">小部件标题:</label>
+            <input type="text" id="widget-title" value="客服支持">
+            
+            <label for="widget-subtitle">小部件副标题:</label>
+            <input type="text" id="widget-subtitle" value="我们通常在几分钟内回复">
+            
+            <label for="welcome-message">欢迎消息:</label>
+            <textarea id="welcome-message">您好！我们能为您做些什么？</textarea>
+            
+            <button onclick="updateWidgetSettings()">更新小部件设置</button>
+        </div>
+        
+        <div class="test-area">
+            <h2>测试区域</h2>
+            <p>你可以在这个区域中输入一些文本，然后与小部件进行交互：</p>
+            <textarea rows="5" cols="50" placeholder="在这里输入一些文本进行测试..."></textarea>
+        </div>
+        
+        <p>检查事项：</p>
+        <ul>
+            <li>小部件是否正确显示为右下角的圆形按钮？</li>
+            <li>点击按钮是否能打开聊天窗口？</li>
+            <li>聊天窗口的样式是否与设置页面中的预览一致？</li>
+            <li>能否正常发送消息并收到回复？</li>
+            <li>关闭按钮是否正常工作？</li>
+            <li>是否显示品牌标识"由 霓虹 提供支持"？</li>
+            <li>小部件是否使用了系统中设置的参数？</li>
+            <li>颜色和头像是否与设置页面中的预览一致？</li>
+        </ul>
+    </div>
+
+    <!-- 小部件容器 -->
+    <div id="neonsupport-widget-container"></div>
+    
+    <!-- 加载小部件脚本 -->
+    <script>
+        // 更新小部件设置的函数
+        function updateWidgetSettings() {
+            const settings = {
+                primaryColor: document.getElementById('primary-color').value,
+                widgetTitle: document.getElementById('widget-title').value,
+                widgetSubtitle: document.getElementById('widget-subtitle').value,
+                welcomeMessage: document.getElementById('welcome-message').value
+            };
+            
+            // 将设置存储到localStorage
+            localStorage.setItem('widgetSettings', JSON.stringify(settings));
+            
+            // 重新加载页面以应用新设置
+            location.reload();
+        }
+        
+        // 获取存储的设置或使用默认值
+        const storedSettings = localStorage.getItem('widgetSettings');
+        const settings = storedSettings ? JSON.parse(storedSettings) : {
+            primaryColor: '#64B5F6',
+            widgetTitle: '客服支持',
+            widgetSubtitle: '我们通常在几分钟内回复',
+            welcomeMessage: '您好！我们能为您做些什么？'
+        };
+    </script>
+    
+    <script 
+        src="/widget.js" 
+        data-widget-id="57f13bb3-7819-45db-9961-bce85b83f3d2"
+        defer>
+    </script>
+</body>
+</html>

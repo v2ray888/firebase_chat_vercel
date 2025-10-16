@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Detailed Widget Debug Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .debug-info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e3f2fd;
+            border-radius: 4px;
+        }
+        .error {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+        .success {
+            color: #388e3c;
+            font-weight: bold;
+        }
+        .warning {
+            color: #f57c00;
+            font-weight: bold;
+        }
+        .instructions {
+            background-color: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Detailed Widget Debug Test Page</h1>
+        <div class="content">
+            <p>This is a detailed test page for debugging the NeonSupport widget.</p>
+            
+            <div class="instructions">
+                <h3>故障排除指南:</h3>
+                <ol>
+                    <li>确保开发服务器正在运行 (npm run dev)</li>
+                    <li>打开浏览器开发者工具 (F12) 查看控制台日志</li>
+                    <li>检查网络选项卡中是否有404错误</li>
+                    <li>确保widget ID在数据库中存在</li>
+                </ol>
+            </div>
+            
+            <div class="debug-info">
+                <h3>已知有效的Widget IDs:</h3>
+                <ul>
+                    <li><strong>57f13bb3-7819-45db-9961-bce85b83f3d2</strong> (163网站)</li>
+                    <li><strong>6f0937e0-3be2-4600-a711-8ac712c0e4da</strong> (霓虹示例网站)</li>
+                    <li><strong>4a1f426e-3643-43eb-8d2f-96c5515ac743</strong> (百度)</li>
+                </ul>
+                <p class="warning">注意: 确保开发服务器在端口9002上运行，这些widget才能正常工作。</p>
+            </div>
+            
+            <div class="debug-info">
+                <h3>测试步骤:</h3>
+                <ol>
+                    <li>检查widget容器是否存在于DOM中</li>
+                    <li>验证widget脚本是否正确加载</li>
+                    <li>检查浏览器控制台中的错误信息</li>
+                    <li>确认开发服务器在端口9002上运行</li>
+                    <li>验证widget ID是否存在于数据库中</li>
+                </ol>
+            </div>
+        </div>
+        
+        <!-- 添加 widget 容器 -->
+        <div id="neonsupport-widget-container"></div>
+    </div>
+    
+    <!-- 加载 widget 脚本 -->
+    <script>
+        console.log('Debug page loaded');
+        
+        // Debug script to check if container exists
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM content loaded');
+            
+            const container = document.getElementById('neonsupport-widget-container');
+            console.log('Container element:', container);
+            
+            if (container) {
+                console.log('✓ Widget container found');
+            } else {
+                console.error('✗ Widget container not found');
+            }
+            
+            // Load widget script
+            const widgetScript = document.createElement('script');
+            widgetScript.src = 'http://localhost:9002/widget.js';
+            widgetScript.setAttribute('data-widget-id', '57f13bb3-7819-45db-9961-bce85b83f3d2');
+            widgetScript.setAttribute('data-base-url', 'http://localhost:9002');
+            widgetScript.defer = true;
+            
+            widgetScript.onload = function() {
+                console.log('✓ Widget script loaded successfully');
+            };
+            
+            widgetScript.onerror = function(err) {
+                console.error('✗ Failed to load widget script:', err);
+            };
+            
+            document.body.appendChild(widgetScript);
+            console.log('Widget script added to page');
+        });
+    </script>
+</body>
+</html>

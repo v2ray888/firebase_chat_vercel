@@ -5,10 +5,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import * as Dialog from '@radix-ui/react-dialog';
 
-function WidgetClient({ website, settings, widgetId }: { 
-  website: any; 
+export default function WidgetClient({ settings }: { 
   settings: any; 
-  widgetId: string;
 }) {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [messages, setMessages] = useState<any[]>([]);
@@ -352,44 +350,4 @@ function WidgetClient({ website, settings, widgetId }: {
       </Dialog.Root>
     </div>
   );
-}
-
-// 服务器组件
-export default async function WidgetPage({ params }: { params: { id: string } }) {
-  try {
-    // 获取应用设置
-    const settingsResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:9002'}/api/settings`, {
-      next: { revalidate: 60 } // 60秒重新验证缓存
-    });
-    
-    let settings;
-    if (!settingsResponse.ok) {
-      console.error('Failed to fetch settings:', settingsResponse.status, settingsResponse.statusText);
-      // 返回默认设置
-      settings = {
-        primaryColor: '#64B5F6',
-        welcomeMessage: '您好！我们能为您做些什么？',
-        widgetTitle: '客服支持',
-        widgetSubtitle: '我们通常在几分钟内回复',
-        enableImageUpload: true
-      };
-    } else {
-      settings = await settingsResponse.json();
-    }
-    
-    // 返回客户端组件
-    return <WidgetClient website={null} settings={settings} widgetId={params.id} />;
-  } catch (error) {
-    console.error('Error in WidgetPage:', error);
-    // 返回默认设置
-    const defaultSettings = {
-      primaryColor: '#64B5F6',
-      welcomeMessage: '您好！我们能为您做些什么？',
-      widgetTitle: '客服支持',
-      widgetSubtitle: '我们通常在几分钟内回复',
-      enableImageUpload: true
-    };
-    
-    return <WidgetClient website={null} settings={defaultSettings} widgetId={params.id} />;
-  }
 }
